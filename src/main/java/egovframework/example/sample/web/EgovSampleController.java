@@ -15,26 +15,23 @@
  */
 package egovframework.example.sample.web;
 
-import java.io.File;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springmodules.validation.commons.DefaultBeanValidator;
 
 import egovframework.rte.fdl.property.EgovPropertyService;
@@ -162,10 +159,14 @@ public class EgovSampleController {
 	public String addSample(
 			@ModelAttribute("searchVO") SampleDefaultVO searchVO,
 			SampleVO sampleVO, BindingResult bindingResult, Model model,
-			SessionStatus status, MultipartHttpServletRequest multiRequest,
+			SessionStatus status,
 			FileVO filevo)
 			throws Exception {
 		
+		System.out.println("----"+ToStringBuilder.reflectionToString(sampleVO));
+		System.out.println(ToStringBuilder.reflectionToString(sampleVO.getFilevo()));
+		
+		/*
 		//기존 방식
 		Map<String,MultipartFile> map = multiRequest.getFileMap();
 		Iterator<String> keyiter = map.keySet().iterator();
@@ -173,18 +174,22 @@ public class EgovSampleController {
 		while(keyiter.hasNext()) {
 			MultipartFile temp = map.get(keyiter.next());
 			temp.transferTo(new File("c:/web-down/"+temp.getOriginalFilename()));
-		}
+		}*/
 		
 		//Converter를 이용하여 MultipartFile을 FileVO로 변환
+		/*
 		System.out.println(filevo.getOrgFileName());
 		System.out.println(filevo.getRealFileName());
 		System.out.println(filevo.getFileSize());
 		System.out.println(filevo.getExt());
-		
+		*/
 		// Server-Side Validation
 		beanValidator.validate(sampleVO, bindingResult);
 
 		if (bindingResult.hasErrors()) {
+			for(ObjectError o : bindingResult.getAllErrors()) {
+				System.out.println(o.toString());
+			}
 			model.addAttribute("sampleVO", sampleVO);
 			return "/sample/egovSampleRegister";
 		}

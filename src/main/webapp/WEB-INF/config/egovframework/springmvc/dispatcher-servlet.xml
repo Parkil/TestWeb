@@ -1,9 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- - DispatcherServlet application context for Application's web tier. -->
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-                http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+<!-- 
+	xsi:schemaLocation 설정시 주의사항 
+	xsd설정시 반드시 상위 폴더명을 추가로 지정해 주어야 한다. 
+	ex)
+	http://www.springframework.org/schema/mvc(xsd파일이 들어있는 폴더)
+	http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd(실제 xsd)
+	
+	xsd파일이 들어있는 폴더가 지정되지 않았을 경우 서버 기동시
+	cvc-complex-type.2.4.c: 일치하는 와일드 카드 문자가 엄격하게 적용되지만 '~' 요소에 대한 선언을 찾을 수 없습니다. 에러가 발생
+ -->
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+						http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+						http://www.springframework.org/schema/context
+						http://www.springframework.org/schema/context/spring-context-3.0.xsd
+						http://www.springframework.org/schema/mvc
+						http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+						">
 
 	<!-- - The controllers are autodetected POJOs labeled with the @Controller annotation. -->
 	<context:component-scan base-package="egovframework">
@@ -11,19 +30,41 @@
 		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service" />
 		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository" />
 	</context:component-scan>
-
-	<!-- - The form-based controllers within this application provide @RequestMapping - annotations at the type level for path 
-		mapping URLs and @RequestMapping - at the method level for request type mappings (e.g., GET and POST). - In contrast, ClinicController 
-		- which is not form-based - provides - @RequestMapping only at the method level for path mapping URLs. - - DefaultAnnotationHandlerMapping 
-		is driven by these annotations and is - enabled by default with Java 5+. -->
-
-	<!-- - This bean processes annotated handler methods, applying Application-specific PropertyEditors - for request parameter 
-		binding. It overrides the default AnnotationMethodHandlerAdapter. -->
+	
+	<!--
+		Controller호출시 binding 되는 파라메터를 property-editor,converter등을 이용하여 자동으로 형변환 및 formatting을 진행하는 bean 지정
+		여기에서 바로 converter나 property-editor 설정을 가진 bean을 지정할 수도 있고 아래 처럼 class를 따로 구성하여 bean을 지정할 수도 있다.
+		
+		[파라메터가 binding되는 기준]
+		html -> Controller 진행시 @ModelAttribute를 이용하여 input의 값을 VO로 자동 mapping
+		html 에서 <form:form commandName="vo명"> ~ </form:form>으로 지정한 VO를 Controller 파라메터로 지정
+		html -> Controller 진행시 @RequestParam 을 이용하여 파라메터를 가져올때 
+	-->
 	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
 		<property name="webBindingInitializer">
 			<bean class="egovframework.example.cmmn.web.EgovBindingInitializer" />
 		</property>
 	</bean>
+	
+	<!-- Converter Config -->
+	
+	<!-- 웹에서는 아래 bean을 설정해 주어야 한다고하는데 지정하지 않아도 동작하는데에는 문제가 없음
+	<bean id="webBindingInitializer" class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">
+		<property name="conversionService" ref="conversionService"/>
+	</bean>
+	-->
+	
+	<!-- convert 클래스를 지정 set안에 여러개의 converter를 등록할 수 있다. -->
+	<bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+		<property name="converters">
+			<set>
+				<bean class="egovframework.example.util.MultipartFileToFileVOConverter"/>
+			</set>
+		</property>
+	</bean>
+	
+	<!-- /Converter Config -->
+
 	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
 
 	<!-- - This bean resolves specific types of exceptions to corresponding logical - view names for error views. The default 
@@ -71,14 +112,4 @@
 		<property name="defaultEncoding" value="utf-8"/>
 	</bean>
 	<!-- /File Upload -->
-	
-	<!-- Converter Config -->
-	<bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
-		<property name="converters">
-			<set>
-				<bean class="egovframework.example.util.MultipartFileToFileVOConverter"/>
-			</set>
-		</property>
-	</bean>
-	<!-- /Converter Config -->
 </beans>

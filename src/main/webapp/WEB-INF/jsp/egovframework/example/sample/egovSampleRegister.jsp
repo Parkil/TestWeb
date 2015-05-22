@@ -61,7 +61,7 @@ function fn_egov_save() {
 </head>
 <body style="text-align:center; margin:0 auto; display:inline; padding-top:100px;">
 
-<form:form commandName="sampleVO" name="detailForm" enctype="multipart/form-data">
+<form:form commandName="sampleVO" name="detailForm" method="post" enctype="multipart/form-data">
 <div id="content_pop">
 	<!-- 타이틀 -->
 	<div id="title">
@@ -115,7 +115,7 @@ function fn_egov_save() {
 		<tr>
 			<td class="tbtd_caption">파일등록</td>
 			<td class="tbtd_content">
-				<input type="file" name="filename"/>
+				<input type="file" name="aaa"/>
 			</td>
 		</tr>
 	</table>

@@ -12,7 +12,7 @@ public class MultipartFileToFileVOConverter implements Converter<MultipartFile, 
 
 	@Override
 	public FileVO convert(MultipartFile source) {
-		System.out.println("Convertttttt");
+		System.out.println("FileVO Converter exec");
 		FileVO result = null;
 		
 		if(source == null) {
