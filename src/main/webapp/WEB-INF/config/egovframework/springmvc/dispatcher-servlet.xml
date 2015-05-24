@@ -54,8 +54,15 @@
 	</bean>
 	-->
 	
-	<!-- convert 클래스를 지정 set안에 여러개의 converter를 등록할 수 있다. -->
-	<bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+	<!-- 
+		convert 클래스를 지정 set안에 여러개의 converter를 등록할 수 있다.
+		converter만 등록시에는 org.springframework.context.support.ConversionServiceFactoryBean을 지정하고
+		formatter까지 같이 지정하려면 org.springframework.format.support.FormattingConversionServiceFactoryBean을 지정
+		
+		사용자 정의 formatter를 이용하려면
+		<property name="formatters"></property>에 converters와 동일하게 bean을 지정
+	-->
+	<bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
 		<property name="converters">
 			<set>
 				<bean class="egovframework.example.util.MultipartFileToFileVOConverter"/>

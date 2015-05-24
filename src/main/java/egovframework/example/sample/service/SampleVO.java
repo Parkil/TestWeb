@@ -15,6 +15,11 @@
  */
 package egovframework.example.sample.service;
 
+import java.math.BigDecimal;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.NumberFormat;
+
 import egovframework.example.cmmn.service.FileVO;
 
 
@@ -54,6 +59,12 @@ public class SampleVO extends SampleDefaultVO {
 	 * Converter가 실행되어 형변환된 내용이 VO에 담기게 된다.
 	 */
 	private FileVO filevo;
+
+	/*
+	 * Number Format 지정
+	 */
+	@NumberFormat(style = NumberFormat.Style.NUMBER, pattern = "#,###.###")
+	private BigDecimal sss = new BigDecimal("10000000000");
 
 	public String getId() {
 		return id;
@@ -101,5 +112,13 @@ public class SampleVO extends SampleDefaultVO {
 
 	public void setFilevo(FileVO filevo) {
 		this.filevo = filevo;
+	}
+
+	public BigDecimal getSss() {
+		return sss;
+	}
+
+	public void setSss(BigDecimal sss) {
+		this.sss = sss;
 	}
 }

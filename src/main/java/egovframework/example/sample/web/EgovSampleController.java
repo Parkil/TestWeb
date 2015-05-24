@@ -159,15 +159,15 @@ public class EgovSampleController {
 	public String addSample(
 			@ModelAttribute("searchVO") SampleDefaultVO searchVO,
 			SampleVO sampleVO, BindingResult bindingResult, Model model,
-			SessionStatus status,
-			FileVO filevo)
+			SessionStatus status)
 			throws Exception {
 		
 		System.out.println("----"+ToStringBuilder.reflectionToString(sampleVO));
 		System.out.println(ToStringBuilder.reflectionToString(sampleVO.getFilevo()));
+		sampleVO.getFilevo().transferFile("c:/web-down");
 		
 		/*
-		//기존 방식
+		//기존에 MultipartRequest를 인자로 받아서 파일 업로드를 처리하는 방식
 		Map<String,MultipartFile> map = multiRequest.getFileMap();
 		Iterator<String> keyiter = map.keySet().iterator();
 		
@@ -176,18 +176,12 @@ public class EgovSampleController {
 			temp.transferTo(new File("c:/web-down/"+temp.getOriginalFilename()));
 		}*/
 		
-		//Converter를 이용하여 MultipartFile을 FileVO로 변환
-		/*
-		System.out.println(filevo.getOrgFileName());
-		System.out.println(filevo.getRealFileName());
-		System.out.println(filevo.getFileSize());
-		System.out.println(filevo.getExt());
-		*/
 		// Server-Side Validation
 		beanValidator.validate(sampleVO, bindingResult);
 
 		if (bindingResult.hasErrors()) {
 			for(ObjectError o : bindingResult.getAllErrors()) {
+				
 				System.out.println(o.toString());
 			}
 			model.addAttribute("sampleVO", sampleVO);

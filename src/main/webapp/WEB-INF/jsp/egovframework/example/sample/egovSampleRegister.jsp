@@ -110,12 +110,17 @@ function fn_egov_save() {
 			<td class="tbtd_caption">등록자</td>
 			<td class="tbtd_content">
 				<form:input path="regUser" maxlength="10" cssClass="txt"  />
+				<!-- 
+					Number Format을 비롯하여 Formatter가 작동하려면 binding이 되어야 한다.
+					그냥 el로 ${sampleVO.sss}로 선언하면 formatter가 작동하지 않으며 아래처럼 spring:bind로 binding을 시켜주어야 한다.
+				-->
+				<spring:bind path="sampleVO.sss">${status.value}</spring:bind>
 				&nbsp;<form:errors path="regUser" /></td>
 		</tr>
 		<tr>
 			<td class="tbtd_caption">파일등록</td>
 			<td class="tbtd_content">
-				<input type="file" name="aaa"/>
+				<input type="file" name="filevo"/> --- ${sampleVO.sss}
 			</td>
 		</tr>
 	</table>

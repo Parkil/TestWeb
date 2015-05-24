@@ -9,11 +9,11 @@ import org.springframework.web.multipart.MultipartFile;
  * MultipartFile -> FileVO Convert를 위한 VO
  */
 public class FileVO {
-	private String orgFileName;
+	private String orgFileName = "";
 	private String realFileName;
 	private String ext;
 	private File file;
-	private MultipartFile multipartfile;
+	private MultipartFile multipartfile = null;
 	private long fileSize;
 	
 	public String getOrgFileName() {
@@ -54,7 +54,9 @@ public class FileVO {
 	}
 	
 	public void transferFile(String filePath) throws IllegalAccessException, IOException {
-		file = new File(filePath);
-		multipartfile.transferTo(file);
+		if(fileSize != 0 || orgFileName.intern() != "".intern()) {
+			file = new File(filePath+"/"+orgFileName);
+			multipartfile.transferTo(file);
+		}
 	}
 }
