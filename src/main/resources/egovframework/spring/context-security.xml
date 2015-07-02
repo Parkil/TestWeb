@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- spring security 설정파일 -->
+<bean:beans
+	xmlns="http://www.springframework.org/schema/security"
+	xmlns:bean="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+						http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+						http://www.springframework.org/schema/security
+						http://www.springframework.org/schema/security/spring-security-3.2.xsd
+						">
+
+	<http pattern="/**/*.js" security="none"/>
+	<http pattern="/**/*.css" security="none"/>
+	<http pattern="/images/*" security="none"/>
+	
+	<!--
+		intercept-url 지정시 주의점
+		구체적인 URL을 먼저 설정하고 덜 구체적인 패터을 나중에 설정해야 함
+		ex)
+		-> 은 왼쪽조건을 먼저 설정하고 그다음 오른쪽 조건을 설정한다는 의미
+		
+		/** -> /admin/** : 먼저지정한 /**에서 조건이 설정되어 버리기 때문에 /admin/** 조건이 제대로 걸리지 않는다.
+		/admin/** -> /** : 정상적으로 작동함
+		
+		로그인하지 않은사람만 봐야 하는 페이지의 경우에는 ROLE_ANONYMOUS로 지정
+	-->
+	<http auto-config="true">
+		<intercept-url pattern="/index.jsp" access="permitAll"/>
+		<intercept-url pattern="/login.do"  access="permitAll"/>
+		<intercept-url pattern="/admin/**"  access="hasRole('ROLE_ADMIN')"/>
+		<intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>
+		
+		<!--
+			커스텀 로그인 화면 지정
+			username-parameter  		: id값을 저장할 input id
+			password-parameter  		: password 값을 저장할 input id
+			login-page					: 로그인페이지 url
+			default-target-url  		: 인증성공시 표시할 url
+			authentication-failure-url  : 인증실패시 url
+		-->
+		<form-login
+			username-parameter="id"
+			password-parameter="pw"
+			login-page="/login.do"
+			default-target-url="/sample/egovSampleList.do"
+			authentication-failure-url="/login.do?fail=true"
+		/>
+	</http>
+	
+	<authentication-manager>
+		<authentication-provider>
+			<user-service>
+				<user name="user" password="user" authorities="ROLE_USER"/>
+				<user name="admin" password="admin" authorities="ROLE_ADMIN"/>
+			</user-service>
+		</authentication-provider>
+	</authentication-manager>
+</bean:beans>

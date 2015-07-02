@@ -27,7 +27,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
@@ -36,7 +35,6 @@ import org.springmodules.validation.commons.DefaultBeanValidator;
 
 import egovframework.rte.fdl.property.EgovPropertyService;
 import egovframework.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
-import egovframework.example.cmmn.service.FileVO;
 import egovframework.example.sample.service.EgovSampleService;
 import egovframework.example.sample.service.SampleDefaultVO;
 import egovframework.example.sample.service.SampleVO;
@@ -78,6 +76,7 @@ public class EgovSampleController {
 	 * @return "/sample/egovSampleList"
 	 * @exception Exception
 	 */
+	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/sample/egovSampleList.do")
 	public String selectSampleList(
 			@ModelAttribute("searchVO") SampleDefaultVO searchVO, ModelMap model)
@@ -263,5 +262,15 @@ public class EgovSampleController {
 		status.setComplete();
 		return "forward:/sample/egovSampleList.do";
 	}
-
+	
+	
+	/**
+	 * 로그인 화면으로 이동한다.
+	 * @return /login/login
+	 * @throws Exception
+	 */
+	@RequestMapping("/login.do")
+	public String loginview() throws Exception {
+		return "/login/login";
+	}
 }

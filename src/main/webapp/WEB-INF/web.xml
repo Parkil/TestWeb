@@ -12,19 +12,34 @@
 		</init-param>
 	</filter>    
 	<filter>
-        <filter-name>HTMLTagFilter</filter-name>
-        <filter-class>
-            egovframework.rte.ptl.mvc.filter.HTMLTagFilter
-        </filter-class>
-    </filter>
+		<filter-name>HTMLTagFilter</filter-name>
+		<filter-class>
+			egovframework.rte.ptl.mvc.filter.HTMLTagFilter
+		</filter-class>
+	</filter>
 	<filter-mapping>
 		<filter-name>encodingFilter</filter-name>
 		<url-pattern>*.do</url-pattern>
 	</filter-mapping>
 	<filter-mapping>
-        <filter-name>HTMLTagFilter</filter-name>
-        <url-pattern>*.do</url-pattern>
-    </filter-mapping>	
+		<filter-name>HTMLTagFilter</filter-name>
+		<url-pattern>*.do</url-pattern>
+	</filter-mapping>	
+	
+	<!-- spring security 필터 설정 대상지정시 spring security내부에서 *.do가 아닌 기능을 사용하기 때문에 /*이 아닌 .do를 지정하면 안됨  -->
+	<filter>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<filter-class>
+			org.springframework.web.filter.DelegatingFilterProxy
+		</filter-class>
+	</filter>
+	
+	<filter-mapping>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<!-- /spring security 필터 설정 -->
+	
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
@@ -63,15 +78,15 @@
 	</login-config>
 	
 	<error-page>
-        <exception-type>java.lang.Throwable</exception-type>
-        <location>/common/error.jsp</location>
-    </error-page>
-    <error-page>
-        <error-code>404</error-code>
-        <location>/common/error.jsp</location>
-    </error-page>
-    <error-page>
-        <error-code>500</error-code>
-        <location>/common/error.jsp</location>
-    </error-page>
+		<exception-type>java.lang.Throwable</exception-type>
+		<location>/common/error.jsp</location>
+	</error-page>
+	<error-page>
+		<error-code>404</error-code>
+		<location>/common/error.jsp</location>
+	</error-page>
+	<error-page>
+		<error-code>500</error-code>
+		<location>/common/error.jsp</location>
+	</error-page>
 </web-app>

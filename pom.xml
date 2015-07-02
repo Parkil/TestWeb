@@ -10,7 +10,7 @@
 	<url>http://maven.apache.org</url>
 
 	<properties>
-		<spring.maven.artifact.version>3.0.5.RELEASE</spring.maven.artifact.version>
+		<spring.maven.artifact.version>3.2.5.RELEASE</spring.maven.artifact.version>
 	</properties>
 
 	<repositories>
@@ -103,6 +103,29 @@
 			<artifactId>spring-webmvc</artifactId>
 			<version>${spring.maven.artifact.version}</version>
 		</dependency>
+		
+		<!-- spring security -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+			<version>${spring.maven.artifact.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<version>${spring.maven.artifact.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+			<version>${spring.maven.artifact.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-taglibs</artifactId>
+			<version>${spring.maven.artifact.version}</version>
+		</dependency>
+		<!-- /spring security -->
 
 		<dependency>
 			<groupId>egovframework.rte</groupId>
