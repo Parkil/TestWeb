@@ -130,4 +130,14 @@
 		<property name="defaultEncoding" value="utf-8"/>
 	</bean>
 	<!-- /File Upload -->
+	
+	<!-- Interceptor -->
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/sample/addSample.do"/>
+			<mvc:mapping path="/sample/updateSample.do"/>
+			<bean id="RefererInterceptor" class="egovframework.example.cmmn.interceptor.RefererInterceptor"/>
+		</mvc:interceptor>
+	</mvc:interceptors>
+	<!-- /Interceptor -->
 </beans>
