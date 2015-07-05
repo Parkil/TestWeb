@@ -25,7 +25,7 @@
 		
 		로그인하지 않은사람만 봐야 하는 페이지의 경우에는 ROLE_ANONYMOUS로 지정
 	-->
-	<http auto-config="true">
+	<http auto-config="true" use-expressions="true">
 		<intercept-url pattern="/index.jsp" access="permitAll"/>
 		<intercept-url pattern="/login.do"  access="permitAll"/>
 		<intercept-url pattern="/admin/**"  access="hasRole('ROLE_ADMIN')"/>
