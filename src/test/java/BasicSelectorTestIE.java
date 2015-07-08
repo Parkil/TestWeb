@@ -63,14 +63,38 @@ public class BasicSelectorTestIE {
 		 * 
 		 * form table tr - 부모 -> 자식 순으로 배열한다 form > table > tr 이런식으로 명시적으로 처리하는것도 가능
 		 * + -> 동일한 레벨의 형제tag를 반환 form table tr+tr - table의 첫번째 tr tag의 형제 tag 즉 두번째 tr을 가리킨다.
+		 * 
+		 * .className -> class="className"인 요소를 검색
+		 * 
+		 * #className -> id="className"인 요소를 검색
+		 * 
+		 * input[name=id][value=111] -> <input name="id" value="111"~> 인 요소를 검색
 		 */
-		WebElement css_id = driver.findElement(By.cssSelector("form table tr td+td input"));
-		WebElement css_pw = driver.findElement(By.cssSelector("form table tr+tr td+td input"));
+		//WebElement css_id = driver.findElement(By.cssSelector("form table tr td+td input"));
+		//WebElement css_pw = driver.findElement(By.cssSelector("form table tr+tr td+td input"));
+		
+		//WebElement css_id = driver.findElement(By.cssSelector(".id_td input"));
+		//WebElement css_pw = driver.findElement(By.cssSelector(".pw_td input"));
+		
+		//WebElement css_id = driver.findElement(By.cssSelector("#id"));
+		//WebElement css_pw = driver.findElement(By.cssSelector("#pw"));
+		
+		WebElement css_id = driver.findElement(By.cssSelector("input[name=id]"));
+		WebElement css_pw = driver.findElement(By.cssSelector("input[name=pw]"));
 		
 		
 		assertEquals(list.size() , 3);
 		assertEquals(id.getText(), "");
 		assertEquals(pw.getText(), "");
+		
+		//해당 웹 요소의 값을 비교 setAttribute는 없으며 사용하려면 JavaScirptExecutor를 사용해야 한다.
+		assertEquals(id.getAttribute("value"), "1234");
+		assertEquals(pw.getAttribute("value"), "1234");
+		
+		assertEquals(css_id.getAttribute("value"), "1234");
+		assertEquals(css_pw.getAttribute("value"), "1234");
+		
+		//getText()는 javascript innerText의 값을 반환한다.
 		assertEquals(id_byname.getText(), "");
 		assertEquals(pw_byname.getText(), "");
 		assertEquals(id_byclass.getText(), "");
