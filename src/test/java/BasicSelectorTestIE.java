@@ -82,6 +82,18 @@ public class BasicSelectorTestIE {
 		WebElement css_id = driver.findElement(By.cssSelector("input[name=id]"));
 		WebElement css_pw = driver.findElement(By.cssSelector("input[name=pw]"));
 		
+		//nth-child는 index가 1부터 시작
+		WebElement contains = driver.findElement(By.cssSelector("form#loginfrm :nth-child(1)"));
+		
+		//first-child 해당 자식 첫번째 노드 last-child 해당자식 마지막노드 : 노드가 1개인 경우에는 first-child,last-child가 같은결과를 반환한다.
+		WebElement contains_first = driver.findElement(By.cssSelector("form#loginfrm :first-child"));
+		WebElement contains_last  = driver.findElement(By.cssSelector("form#loginfrm :last-child"));
+		
+		System.out.println("zzz : "+contains.getText());
+		
+		System.out.println("first : "+contains_first.getText());
+		System.out.println("last : "+contains_last.getText());
+		
 		
 		assertEquals(list.size() , 3);
 		assertEquals(id.getText(), "");
