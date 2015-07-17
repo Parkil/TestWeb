@@ -40,6 +40,25 @@
 	</filter-mapping>
 	<!-- /spring security 필터 설정 -->
 	
+	<!-- 
+		Root Context, Servlet Context
+		
+		Root Context
+		1.최상단에 위치한 Context
+		2.Root Context에서 등록한 Bean은 여러개의 Servlet Context에서 사용할 수 있다
+		3.Servlet Context에서 등록한 Bean을 Root Context에서 사용하는것은 불가능하다
+		4.Root Context,Servlet Context에 동일한 명칭의 Bean이 있을 경우 Servlet Context Bean이 우선적으로 실행된다.
+		
+		Servlet Context
+		1.Servlet 별로 정의된 Context
+		2.servlet-mapping에서 정의된 url이 실행될때만 해당 Context가 실행됨
+		
+		이와 관련하여 중요한 사실이 있는데 MVC 컴포넌트 등록시 
+		@Controller 는 Servlet Context에
+		나머지 컴포넌트는 Root Context에 등록을 해야 정상적으로 등록이 됨
+		직접 등록이 아닌 scanner를 이용시에는 include-filter,exclude-filter를 이용하여 전체 scan이 되지 않도록 처리하여야 함
+	-->
+	<!-- Root Context Config -->
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
@@ -51,6 +70,7 @@
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
 	
+	<!-- Servlet Context Config -->
 	<servlet>
 		<servlet-name>action</servlet-name>
 		<servlet-class>
