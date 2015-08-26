@@ -35,6 +35,8 @@ public class BasicSelectorTestIE {
 
 	@Test
 	public void test() {
+		System.out.println("git branch - merge 테스트용");
+		System.out.println("branch1에서 수정하고 master로 머지처리");
 		File file = new File("d:/selenium/IEDriverServer_Win32_2.46.0/IEDriverServer.exe"); //ieDriver 설정 크롬의 경우에는 크롬드라이버위치를 파이어폭스의 경우에는 path에 파이어폭스가 잡혀있어야 한다.
 		System.setProperty("webdriver.ie.driver", file.getAbsolutePath()); //ie Driver를 쓰기 위해서 해당 System property를 설정해 주어야 함
 		
