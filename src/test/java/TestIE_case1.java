@@ -30,6 +30,9 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import util.ObjectMap;
+import util.WebElementExpand;
+
 import com.sun.jna.platform.WindowUtils;
 
 /*
@@ -43,6 +46,7 @@ import com.sun.jna.platform.WindowUtils;
 public class TestIE_case1 {
 	private static WebDriver driver;
 	private static JavascriptExecutor je;
+	private static ObjectMap map;
 	
 	/*
 	 * 해당클래스가 시작전 실행될 내용을 정의
@@ -52,9 +56,9 @@ public class TestIE_case1 {
 	public static void setUpBeforeClass() throws Exception {
 		System.out.println("setUpBeforeClass");
 		
-		StringBuffer sb = new StringBuffer();
-		System.out.println("setUp");
+		map = new ObjectMap("C:/Dev/eclipse/workspace/TestWeb/src/test/java/util/objectmap.properties");
 		
+		StringBuffer sb = new StringBuffer();
 		sb.append(System.getProperty("user.dir"));
 		sb.append(File.separator);
 		sb.append("src");
@@ -107,12 +111,42 @@ public class TestIE_case1 {
 	}
 	
 	@Test
-	public void login_test() {
+	public void login_test() throws Exception{
 		InjectJQuery ij = new InjectJQuery();
 		ij.injectJQueryIfNone(je);
 		
+		//javasciptExecutor를 이용하여 대상요소에 값을 입력
+		/*
 		je.executeScript("$('#id').val('user')");
 		je.executeScript("$('#pw').val('user');");
+		*/
+		
+		//WebElement 확장 클래스를 이용하여 대상요소에 값을 입력
+		/*
+		WebElement id = driver.findElement(By.cssSelector("#id"));
+		WebElement pw = driver.findElement(By.cssSelector("#pw"));
+		
+		WebElementExpand.setAttribute(id, "value", "user1");
+		WebElementExpand.setAttribute(pw, "value", "user1");
+		
+		WebElementExpand.highlightElement(id);
+		*/
+		
+		/*
+		 * ObjectMap을 이용하여 대상요소를 지정하고 값을 입력
+		 * 테스트케이스가 여러개 작성되면 By.~ 로시작되는 위치정보가 중복되기 마련이고 
+		 * 이 위치정보가 웹어플에서 수정되면 모든 코드의 데이터를 다 수정해야 하는 문제가 발생한다.
+		 * 이를 막기 위해 ObjectMap에서 모든 위치정보를 관리하도록 처리한다.
+		 */
+		
+		WebElement id = driver.findElement(map.getLocator("id"));
+		WebElement pw = driver.findElement(map.getLocator("pw"));
+		
+		id.clear();
+		pw.clear();
+		
+		id.sendKeys("user");
+		pw.sendKeys("user");
 		
 		WebElement submit = driver.findElement(By.cssSelector("input[type='submit']"));
 		
