@@ -25,7 +25,14 @@ public class UserInfo implements UserDetails {
 	private String name;
 	private Set<GrantedAuthority> authorities;
 	
-	public void setAuthorities(Set<GrantedAuthority> authorities) {
+	public UserInfo(String id,String pw,String name, Collection<? extends GrantedAuthority> authorities) {
+		this.id = id;
+		this.pw = pw;
+		this.name = name;
+		this.authorities = Collections.unmodifiableSet(sortAuthorities(authorities));
+	}
+	
+	public void setAuthorities(Collection<GrantedAuthority> authorities) {
 		this.authorities = Collections.unmodifiableSet(sortAuthorities(authorities));
 	}
 	
