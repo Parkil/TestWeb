@@ -8,13 +8,16 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import pageobject.LoginPage;
 import pageobject.LoginPage_Loadable;
 import pageobject.LoginPage_Private;
+import util.JQueryUITab;
 import util.Util;
+import util.WebTable;
 
 /*
  * PageFactory관련 테스트 케이스
@@ -31,7 +34,7 @@ public class TestIE_case4 {
 
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
-		driver.close();
+		//driver.close();
 	}
 
 	@Before
@@ -63,17 +66,47 @@ public class TestIE_case4 {
 	}
 	
 	@Test
-	public void test4() {
+	public void test3() {
 		LoginPage_Loadable load = new LoginPage_Loadable(driver);
 		load.get();
-		load.Login("user2", "user2");
+		load.Login("user", "user");
 	}
 	
 	@Test
-	public void test5() {
+	public void test4() {
 		WebDriverWait wdw = new WebDriverWait(driver, 10);
-		wdw.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("input[name='id']")));
+		wdw.until(ExpectedConditions.titleContains("Basic Board List"));
 		
-		assertEquals("http://localhost:10010", driver.getCurrentUrl());
+		assertEquals("http://localhost:10010/sample/egovSampleList.do", driver.getCurrentUrl());
+		
+		WebElement table = driver.findElement(By.tagName("table"));
+		WebTable w_table = new WebTable(table);
+		
+		System.out.println(w_table.getCellContents(2, 2));
+		
+		assertEquals(7, w_table.getRowCount());
+		assertEquals(6, w_table.getColCount());
+	}
+	
+	//@Test
+	public void test5() {
+		driver.get("http://dl.dropbox.com/u/55228056/jQueryUITabDemo.html");
+		
+		WebDriverWait wdw = new WebDriverWait(driver, 10);
+		wdw.until(ExpectedConditions.titleContains("jQuery UI Tabs"));
+		
+		try {
+			JQueryUITab tab = new JQueryUITab(driver.findElement(By.cssSelector("div[id=MyTab][class^=ui-tabs]")));
+			
+			assertEquals(3, tab.getTabCount());
+			assertEquals("Home", tab.getSelectedTab());
+			
+			tab.selectTab("Options");
+			assertEquals("Options", tab.getSelectedTab());
+			
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

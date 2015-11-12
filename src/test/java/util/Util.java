@@ -3,7 +3,9 @@ package util;
 import java.io.File;
 
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
 
 public class Util {
 	
@@ -24,6 +26,14 @@ public class Util {
 		System.out.println(sb.toString());
 		
 		System.setProperty("webdriver.ie.driver", sb.toString());
-		return new InternetExplorerDriver();
+		DesiredCapabilities dc = new DesiredCapabilities();
+		return new InternetExplorerDriver(dc);
+	}
+	
+	//firegox 용 웹 드라이버 클래스 반환
+	public static WebDriver getFireFoxDriver() {
+		System.setProperty("webdriver.firefox.bin", "d:/Util/FirefoxPortable/firefox.exe");
+		DesiredCapabilities dc = new DesiredCapabilities();
+		return new FirefoxDriver(dc);
 	}
 }

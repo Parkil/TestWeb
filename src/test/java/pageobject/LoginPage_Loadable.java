@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.LoadableComponent;
 
@@ -14,7 +15,10 @@ import org.openqa.selenium.support.ui.LoadableComponent;
  */
 public class LoginPage_Loadable extends LoadableComponent<LoginPage_Loadable>{
 	
+	@FindBy(id = "id")
 	private WebElement id;
+	
+	@FindBy(id = "pw")
 	private WebElement pw;
 	private WebElement submit;
 	private WebDriver driver;
@@ -39,7 +43,7 @@ public class LoginPage_Loadable extends LoadableComponent<LoginPage_Loadable>{
 	 */
 	@Override
 	protected void load() {
-		assertEquals(1, 1);
+		assertEquals("Insert Title Here", driver.getTitle());
 	}
 	
 	public void Login(String web_id, String web_pw) {

@@ -30,6 +30,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import util.CompareUtil;
 import util.ObjectMap;
 import util.WebElementExpand;
 
@@ -41,6 +42,12 @@ import com.sun.jna.platform.WindowUtils;
  * @FixMethodOrder(MethodSorters.NAME_ASCENDING) - 메소드명 이름을 오름차순으로 정렬
  * 
  * 다른것도 있는거 같은데 아직 확인은 못함
+ * 
+ * 2015-09-15 추가확인
+ * 각 테스트케이스를 실행할때마다 생성자가 호출되는것이 확인되었고 non-static 변수의 경우 테스트케이스가 끝날때마다 
+ * 초기화가 되는것을 확인함
+ * 
+ * 테스트케이스 전체에서 공통적으로 사용하고자 하는 변수는 static으로 선언할것
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestIE_case1 {
@@ -48,6 +55,9 @@ public class TestIE_case1 {
 	private static JavascriptExecutor je;
 	private static ObjectMap map;
 	
+	private static long startTime = 0L;
+	private static long endTime = 0L;
+
 	/*
 	 * 해당클래스가 시작전 실행될 내용을 정의
 	 * - 테스트케이스개수와 상관없이 테스트케이스 클래스별로 1번만 실행
@@ -110,6 +120,9 @@ public class TestIE_case1 {
 		assertEquals("150px", target.getCssValue("width"));
 	}
 	
+	
+	
+	
 	@Test
 	public void login_test() throws Exception{
 		InjectJQuery ij = new InjectJQuery();
@@ -139,6 +152,7 @@ public class TestIE_case1 {
 		 * 이를 막기 위해 ObjectMap에서 모든 위치정보를 관리하도록 처리한다.
 		 */
 		
+		
 		WebElement id = driver.findElement(map.getLocator("id"));
 		WebElement pw = driver.findElement(map.getLocator("pw"));
 		
@@ -150,12 +164,14 @@ public class TestIE_case1 {
 		
 		WebElement submit = driver.findElement(By.cssSelector("input[type='submit']"));
 		
+		FileUtils.copyFile(WebElementExpand.captureElement(submit), new File("d:/aaa.png"));
+		
 		//actions를 이용한 화면 요소 클릭 여러개의 action을 선택한 후에 build().perform()을 호출하면 된다.
 		Actions action = new Actions(driver);
 		action.click(submit);
 		action.build().perform();
 		
-		//fail("Not yet implemented");
+		startTime = System.currentTimeMillis();
 	}
 	
 	/*
@@ -172,12 +188,6 @@ public class TestIE_case1 {
 	@Test
 	public void submit_after_test() {
 		assertEquals(-1, driver.getCurrentUrl().indexOf("fail=true"));
-		/*
-		System.out.println("teardown test : "+driver.getCurrentUrl());
-		System.out.println("pageSource : "+driver.getPageSource());
-		System.out.println("title"+driver.getTitle());
-		System.out.println("window handle : "+driver.getWindowHandle());
-		*/
 	}
 	
 	//Drag&Drop test
@@ -198,6 +208,12 @@ public class TestIE_case1 {
 		WebDriverWait wdw = new WebDriverWait(driver, 10); //기본시간 설정(단위 초)
 		wdw.until(ExpectedConditions.titleContains("Basic Board List")); //title명이 Basic Board List가 나타날때까지 대기
 		
+		endTime = System.currentTimeMillis();
+		
+		System.out.println("endTime : "+endTime);
+		System.out.println("startTime : "+startTime);
+		System.out.println("로그인후 화면까지 표시되는 시간 : "+(endTime - startTime)+" milliseconds");
+		
 		//until조건을 사용자가 정의하여 사용하는 방법 - 해당 웹 요소가 반환될때 까지 대기
 		WebElement start = (new WebDriverWait(driver, 10).until(
 			new ExpectedCondition<WebElement>() {
@@ -216,16 +232,6 @@ public class TestIE_case1 {
 			}
 		});
 		
-		//until조건을 사용자가 정의하여 사용하는 방법 - javascript가 결과값을 반환할때까지 대기
-		wdw.until(new ExpectedCondition<Boolean>() {
-			@Override
-			public Boolean apply(WebDriver d) {
-				JavascriptExecutor je = (JavascriptExecutor)d;
-				return (Boolean)je.executeScript("return jQuery.active == 0");
-			}
-		});
-		
-		//WebElement start = driver.findElement(By.cssSelector("body tr th"));
 		WebElement end	 = driver.findElement(By.cssSelector("body tr th+th+th+th+th+th"));
 		
 		Actions action = new Actions(driver);
@@ -239,6 +245,10 @@ public class TestIE_case1 {
 		File file = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
 		try {
 			FileUtils.copyFile(file, new File("d:/screen1.png"));
+			FileUtils.copyFile(file, new File("d:/screen2.png"));
+			
+			assertEquals(CompareUtil.Result.PixcelMismatch, CompareUtil.CompareImage("d:/screen1.png", "d:/screen2.png"));
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -272,7 +282,7 @@ public class TestIE_case1 {
 	}
 	
 	//multi select test
-	@Test
+	//@Test
 	public void submit_after_test6() {
 		Select sel = new Select(driver.findElement(By.cssSelector("#multisel")));
 		
@@ -312,7 +322,7 @@ public class TestIE_case1 {
 	}
 	
 	//radio button test(여기서는 구현하지 않았으나 체크박스도 동일한 로직으로 작동한다 체크박스 테스트 구현시에는 아래 코드에서 webelement만 체크박스요소로 가져올것)
-	@Test
+	//@Test
 	public void sumbit_after_test91() {
 		//radio button 요소 추출
 		WebElement target = driver.findElement(By.cssSelector("input[name='rdr'][value='1']"));
@@ -341,7 +351,7 @@ public class TestIE_case1 {
 	/*
 	 * 팝업관련 테스트
 	 */
-	@Test
+	//@Test
 	public void submit_after_test92() {
 		WebElement element = driver.findElement(By.cssSelector("#popup"));
 		element.click(); //팝업표시
