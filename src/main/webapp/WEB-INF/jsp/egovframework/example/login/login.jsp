@@ -8,6 +8,7 @@
 <title>Insert title here</title>
 </head>
 <body>
+세션정보 : ${sessionScope}
 <form id="loginfrm" name="loginfrm" method="POST" action="/j_spring_security_check">
 	<table>
 		<tr><td>User:</td><td><input type='text' name='id' id='id' value=''></td></tr>
