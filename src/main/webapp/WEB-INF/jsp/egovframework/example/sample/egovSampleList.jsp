@@ -3,6 +3,14 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="ui" uri="http://egovframework.gov/ctl/ui"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+
+<%@ page import="org.springframework.security.core.context.SecurityContextHolder" %>
+<%@ page import="org.springframework.security.core.Authentication" %>
+<%@ page import="egovframework.spring.security.UserInfo" %>
+
+<!-- spring security custom tag -->
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+
 <%
   /**
   * @Class Name : egovSampleList.jsp
@@ -18,6 +26,36 @@
   *  
   * Copyright (C) 2009 by MOPAS  All right reserved.
   */
+%>
+
+<%
+/* Spring security를 이용하여 데이터를 가져오는 방법
+Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+Object principal = auth.getPrincipal();
+String name = "";
+
+if(principal != null && principal instanceof UserInfo){
+	name = ((UserInfo)principal).getId();
+	out.println("로그인한 사용자 : "+name);
+}else {
+	out.println("사용자 정보 없음");
+}*/
+
+/* Servlet Spec을 이용하여 로그인 데이터를 가져오는 방법*/
+Authentication auth = (Authentication)request.getUserPrincipal();
+
+Object principal = auth.getPrincipal(); //동일한 내용이 세션에도 저장되어 있음
+String name = "";
+
+if(principal != null && principal instanceof UserInfo){
+	UserInfo user_info = ((UserInfo)principal);
+	name = user_info.getId();
+	out.println("로그인한 사용자 : "+name);
+}else {
+	out.println("사용자 정보 없음");
+}
+
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -57,6 +95,11 @@ function fn_egov_link_page(pageNo){
 </script>
 </head>
 <body style="text-align:center; margin:0 auto; display:inline; padding-top:100px;">
+세션정보 : ${sessionScope}
+
+<!-- spring security를 이용한 로그아웃 수행 로그아웃시 spring security에서 지정한 세션정보+내가 입력한 세션정보가 같이 삭제된다.-->
+<a href="/logout.do">로그아웃</a> 
+
 <form:form commandName="searchVO" name="listForm" method="post">
 <input type="hidden" name="selectedId" />
 <div id="content_pop">

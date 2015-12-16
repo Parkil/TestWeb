@@ -16,7 +16,7 @@
 	
 	<!--
 		intercept-url 지정시 주의점
-		구체적인 URL을 먼저 설정하고 덜 구체적인 패터을 나중에 설정해야 함
+		구체적인 URL을 먼저 설정하고 덜 구체적인 패턴을 나중에 설정해야 함
 		ex)
 		-> 은 왼쪽조건을 먼저 설정하고 그다음 오른쪽 조건을 설정한다는 의미
 		
@@ -45,15 +45,53 @@
 			login-page="/login.do"
 			default-target-url="/sample/egovSampleList.do"
 			authentication-failure-url="/login.do?fail=true"
+			authentication-success-handler-ref="customSuccessHandler"
+		/>
+		
+		<!--
+			커스텀 로그아웃 지정
+			delete-cookies		: 로그아웃시 삭제할 cookie 정보
+			logout-success-url	: 로그아웃성공시 이동할 url
+			logout-url			: 로그아웃 url지정(미 지정시 /j_spring_security_logout  로 기본지정)
+		-->
+		<logout
+			delete-cookies="JSESSIONID"
+			logout-success-url="/login.do"
+			logout-url="/logout.do"
 		/>
 	</http>
 	
 	<authentication-manager>
+		<!-- ID,PW를 xml에 하드코딩으로 넣는 방식
 		<authentication-provider>
 			<user-service>
 				<user name="user" password="user" authorities="ROLE_USER"/>
 				<user name="admin" password="admin" authorities="ROLE_ADMIN"/>
 			</user-service>
 		</authentication-provider>
+		-->
+		
+		<!-- ID,PW를 따로 정의한 Bean에서 가져오도록 처리하는 방식 -->
+		<authentication-provider user-service-ref="customJdbcDaoImpl"/>
 	</authentication-manager>
+	
+	<!-- 
+		사용자 및 권한을 DB에서 가져오기 위한 Custom bean 지정
+		dataSource : context-datasource에서 지정된 datasource명
+		rolePrefix : 권한 앞에 붙는 전치어
+		usersByUsernameQuery : spring-security에서 사용하는 계정정보를 가져오는데 사용되는 SQL
+		authoritiesByUsernameQuery : spring-security에서 사용하는 권한정보를 가져오는데 사용되는 SQL
+		enableGroups : 권한그룹 허용여부
+	-->
+	<bean:bean id="customJdbcDaoImpl" class="egovframework.spring.security.CustomJdbcDaoImpl">
+		<bean:property name="dataSource" ref="dataSource"/>
+		<bean:property name="rolePrefix" value=""/>
+		<bean:property name="usersByUsernameQuery" value="select id,password,name from memberinfo where id=?"/>
+		<bean:property name="authoritiesByUsernameQuery" value="select authority from member_authority where id=?"/>
+		<bean:property name="enableGroups" value="false"/>
+	</bean:bean>
+	
+	<!-- 로그인성공 Cutom Handler Bean(AuthenticationSuccessHandler 인터페이스를 구현해야 함) -->
+	<bean:bean id="customSuccessHandler" class="egovframework.spring.security.CustomSuccessHandler">
+	</bean:bean>
 </bean:beans>
