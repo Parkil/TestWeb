@@ -17,5 +17,6 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication auth) throws IOException, ServletException {
 		System.out.println("로그인성공");
+		response.sendRedirect("/sample/egovSampleList.do");
 	}
 }
