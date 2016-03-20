@@ -4,7 +4,6 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>TestWeb</groupId>
 	<artifactId>TestWeb</artifactId>
-	<packaging>war</packaging>
 	<version>1.0.0</version>
 	<name>TestWeb</name>
 	<url>http://maven.apache.org</url>
@@ -411,7 +410,41 @@
 			<artifactId>antlr</artifactId>
 			<version>3.0.1</version>
 		</dependency>
-
+		
+		<!-- selenium -->
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-server</artifactId>
+			<version>2.52.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-java</artifactId>
+			<version>2.52.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-htmlunit-driver</artifactId>
+			<version>2.52.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-api</artifactId>
+			<version>2.52.0</version>
+		</dependency>
+		
+		<!-- /selenium -->
+		
+		<!-- Junit Dep -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit-dep</artifactId>
+			<version>4.11</version>
+		</dependency>
+		<!-- /Junit Dep -->
 	</dependencies>
 
 	<build>

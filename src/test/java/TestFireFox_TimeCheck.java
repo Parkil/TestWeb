@@ -2,9 +2,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import net.lightbody.bmp.BrowserMobProxyServer;
 import net.lightbody.bmp.core.har.Har;
-import net.lightbody.bmp.proxy.LegacyProxyServer;
 import net.lightbody.bmp.proxy.ProxyServer;
 
 import org.junit.After;
