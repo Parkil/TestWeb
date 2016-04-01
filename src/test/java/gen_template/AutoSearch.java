@@ -34,7 +34,7 @@ public class AutoSearch {
 
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
-		driver.close();
+		//driver.close();
 	}
 
 	@Before
@@ -65,7 +65,7 @@ public class AutoSearch {
 		assertEquals(driver.getCurrentUrl(), "http://localhost:8080/sample/egovSampleList.do");
 	}
 	
-	@Test
+	//@Test
 	public void test2() {
 		//1.로딩이 다 되었는지 확인
 		
@@ -118,8 +118,26 @@ public class AutoSearch {
 			}else {
 				System.out.println("부모 - 자식간 url이 동일하지 않음");
 				System.out.println(je.executeScript("return document.referrer", ""));
-				driver.get(parent_current_url);
+				//driver.get(parent_current_url);
+				driver.navigate().back();
 			}
 		}
+	}
+	
+	@Test
+	public void test2_1() {
+		String url = driver.getCurrentUrl();
+		By a_tag = By.tagName("a");
+		List<WebElement> a_list = driver.findElements(a_tag);
+		
+		a_list.get(3).click();
+		
+		WebDriverWait wdw = new WebDriverWait(driver,10);
+		wdw.until(ExpectedConditions.elementToBeClickable(By.tagName("body")));
+		
+		By input_hidden = By.cssSelector("input[type=hidden]");
+		List<WebElement> hidden_list = driver.findElements(input_hidden);
+		
+		driver.get(url+Util.getQueryString(hidden_list));
 	}
 }

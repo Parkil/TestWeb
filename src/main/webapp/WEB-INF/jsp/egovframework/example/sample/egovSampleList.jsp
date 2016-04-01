@@ -90,7 +90,7 @@ function fn_egov_link_page(pageNo){
 	document.listForm.action = "<c:url value='/sample/egovSampleList.do'/>";
    	document.listForm.submit();
 }
-
+console.log(document.referrer)
 -->
 </script>
 </head>
@@ -99,7 +99,9 @@ function fn_egov_link_page(pageNo){
 
 <!-- spring security를 이용한 로그아웃 수행 로그아웃시 spring security에서 지정한 세션정보+내가 입력한 세션정보가 같이 삭제된다.-->
 <a href="/logout.do">로그아웃</a> 
-
+<br></br>
+<br></br>
+${param}
 <form:form commandName="searchVO" name="listForm" method="post">
 <input type="hidden" name="selectedId" />
 <div id="content_pop">

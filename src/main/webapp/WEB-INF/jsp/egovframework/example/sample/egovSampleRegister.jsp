@@ -55,13 +55,14 @@ function fn_egov_save() {
         frm.submit();
     }
 }
-
 -->
 </script>
 </head>
+
 <body style="text-align:center; margin:0 auto; display:inline; padding-top:100px;">
 
 <form:form commandName="sampleVO" name="detailForm" method="post" enctype="multipart/form-data">
+<input type="hidden" name="test" value="${param.selectedId}"/>
 <div id="content_pop">
 	<!-- 타이틀 -->
 	<div id="title">
