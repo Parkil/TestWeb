@@ -3,6 +3,8 @@ package util;
 import java.io.File;
 import java.util.List;
 
+import javax.naming.OperationNotSupportedException;
+
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -86,11 +88,15 @@ public class Util {
 	 * @param list
 	 * @return
 	 */
-	public static String getQueryString(List<WebElement> list) {
+	public static String getQueryString(List<WebElement> list) throws OperationNotSupportedException{
 		StringBuffer sb = new StringBuffer();
 		
 		for(int i = 0,length = list.size() ; i<length ; i++) {
 			WebElement el = list.get(i);
+			
+			if(el.getTagName().intern() != "input") {
+				throw new OperationNotSupportedException("this element not input");
+			}
 
 			String prefix = (i == 0) ? "?" : "&";
 			sb.append(prefix);

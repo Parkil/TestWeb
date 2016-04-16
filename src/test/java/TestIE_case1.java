@@ -20,7 +20,6 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.htmlunit.HtmlUnitWebElement;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.os.WindowsUtils;
@@ -327,11 +326,12 @@ public class TestIE_case1 {
 		//radio button 요소 추출
 		WebElement target = driver.findElement(By.cssSelector("input[name='rdr'][value='1']"));
 		
+		/*
 		if(target instanceof HtmlUnitWebElement) {
 			System.out.println("HtmlUnitWebElement");
 		}else if(target instanceof RemoteWebElement) {
 			System.out.println("RemoteWebElement");
-		}
+		}*/
 		
 		//해당 라디오 버튼이 선택되지 않았으면 선택처리
 		if(!target.isSelected()) {
