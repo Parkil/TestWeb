@@ -18,6 +18,7 @@ package egovframework.example.sample.web;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.springframework.stereotype.Controller;
@@ -157,7 +158,7 @@ public class EgovSampleController {
 	@Transactional(rollbackFor={Exception.class}) //rollbackFor에서 지정된 예외가 발생하면 Transaction을 rollback처리한다.
 	public String addSample(
 			@ModelAttribute("searchVO") SampleDefaultVO searchVO,
-			SampleVO sampleVO, BindingResult bindingResult, Model model,
+			@Valid SampleVO sampleVO, BindingResult bindingResult, Model model,
 			SessionStatus status)
 			throws Exception {
 		
@@ -175,7 +176,12 @@ public class EgovSampleController {
 			temp.transferTo(new File("c:/web-down/"+temp.getOriginalFilename()));
 		}*/
 		
-		// Server-Side Validation
+		/*
+		 * context-validator.xml > validator.xml에서 지정한 유효성검사 룰에 맞는지 검사하는 방식
+		 * @Valid 어노테이션 + VO 어노테이션으로 유효성검사를 하려면 dispatcher-servlet.xml에서 <mvc:annotation-driven/>을 선언해 주어야 함
+		 * 
+		 * @Valid 어노테이션과 context-validator.xml > validator.xml을 병용하는것도 가능
+		 */
 		beanValidator.validate(sampleVO, bindingResult);
 
 		if (bindingResult.hasErrors()) {
