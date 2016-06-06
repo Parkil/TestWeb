@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 
+import gen_template.ElementData;
+
 public class Tree {
 
 	private final static int ROOT = 0;
@@ -41,6 +43,10 @@ public class Tree {
 	public Node addNode(String identifier) {
 		return this.addNode(identifier, null);
 	}
+	
+	public Node getNode(String identifier) {
+		return nodes.get(identifier);
+	}
 
 	public Node addNode(String identifier, String parent) {
 		Node node = new Node(identifier);
@@ -48,7 +54,7 @@ public class Tree {
 		
 		int level = 0; //node level
 
-		if (parent != null) { //parent�� null�ΰ��� root ����ϰ����
+		if (parent != null) { //parent node가 null일 경우에는 root node임
 			level = nodes.get(parent).getLevel()+1;
 			nodes.get(parent).addChild(identifier);
 		}
@@ -70,7 +76,8 @@ public class Tree {
 			System.out.println(nodes.get(identifier).getIdentifier()+"=="+nodes.get(identifier).getLevel());
 		} else {
 			String tabs = String.format("%0" + depth + "d", 0).replace("0", "    "); // 4 spaces
-			System.out.println(tabs + nodes.get(identifier).getIdentifier()+"=="+nodes.get(identifier).getLevel());
+			ElementData ed = (ElementData)nodes.get(identifier).getAttach();
+			System.out.println(tabs + nodes.get(identifier).getIdentifier()+"=="+nodes.get(identifier).getLevel()+"=="+ed.getXpath());
 		}
 		depth++;
 		for (String child : children) {
@@ -90,7 +97,7 @@ public class Tree {
 				: new DepthFirstTreeIterator(nodes, identifier);
 	}
 	
-	/** �Է��� Level�� �ش��ϴ� Node����Ʈ�� ��ȯ�Ѵ�.
+	/** 해당 level에 해당하는 node list를 반환
 	 * @param level
 	 * @return
 	 */
@@ -106,7 +113,7 @@ public class Tree {
 		return ret_list;
 	}
 	
-	/** Ư�� Node�� ���� Root������ ��ο� �ش��ϴ� Node�� ��ȯ�Ѵ�.
+	/** 인자로 주어진 Node에서 root까지의 node list반환
 	 * @param identifier
 	 * @return
 	 */

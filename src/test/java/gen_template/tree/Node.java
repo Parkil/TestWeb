@@ -7,7 +7,7 @@ import java.util.ArrayList;
  */
 public class Node implements Comparable<Node>{
 
-	private String identifier; //식별저ㅏ
+	private String identifier; //식별자
 	private String parent_identifier; //부모식별자
 	private int level ; //level
 	private ArrayList<String> children; //자식 노드

@@ -1,15 +1,9 @@
 package gen_template.tree;
 
-import java.util.Iterator;
-
-/*
- * Ʈ�� ���� ����
- */
 public class TestExample {
 	public static void main(String[] args) {
 		Tree tree = new Tree();
 		
-		//�ι�° �Ķ���Ͱ� �θ� �Ķ������
 		tree.addNode("Harry");
 		tree.addNode("Jane", "Harry");
 		tree.addNode("Bill", "Harry");

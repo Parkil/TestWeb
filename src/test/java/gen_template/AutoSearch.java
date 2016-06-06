@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.tools.ant.taskdefs.WaitFor.Unit;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -24,6 +26,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import gen_template.tree.Node;
 import gen_template.tree.Tree;
+import util.InjectJQuery;
 import util.Util;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -56,8 +59,12 @@ public class AutoSearch {
 	 */
 	@Test
 	public void test() {
+		InjectJQuery ij = new InjectJQuery();
+		ij.injectJQueryIfNone(je);
+		
 		driver.get("http://localhost:8082");
 		
+		je.executeScript("$('form[name=loginfrm]').attr('onsubmit','javascript:getSubmitHiddenParam();');", "");
 		WebElement id = driver.findElement(By.cssSelector("#id"));
 		WebElement pw = driver.findElement(By.cssSelector("#pw"));
 		WebElement submit = driver.findElement(By.cssSelector("input[type='submit']"));
@@ -65,6 +72,35 @@ public class AutoSearch {
 		id.sendKeys("user");
 		pw.sendKeys("user");
 		submit.click();
+		
+		String ttt = (String)je.executeScript("return localStorage.test");
+		System.out.println(ttt);
+		
+		/*
+		 * <script type="text/javascript">
+	function test() {
+		$('form[name=loginfrm]').attr('onsubmit',"javascript:getSubmitHiddenParam();");
+		var sss = $('form[name=loginfrm]').attr('onsubmit');
+		console.log('sss : '+sss);
+	}
+	
+	function getSubmitHiddenParam() {
+		var param_arr = new Array();
+		$('input[type=text]').each(function() {
+			var value = $(this).attr('id')+'-'+$(this).val();
+			param_arr.push(value);
+		});
+		
+		localStorage.test = param_arr;
+	}
+</script>
+		 */
+		
+		/*
+		 * 묵시적 대기시간은 해당 wait구문이 호출된후의 페이지에서 대기로직이 실행된다.
+		 * 지금 코드의 경우에는 로그인버튼을 클릭하고 이동하는 페이지에서 10초를 대기한다.
+		 */
+		//driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS); 
 		
 		WebDriverWait wdw = new WebDriverWait(driver,10);
 		wdw.until(ExpectedConditions.titleContains("List"));
@@ -170,7 +206,7 @@ public class AutoSearch {
 		String parent_current_url = driver.getCurrentUrl(); //부모 페이지 url
 		
 		ElementData el_data = new ElementData();
-		el_data.setCssSelector("root");
+		el_data.setXpath("root");
 		el_data.setUrl(parent_current_url);
 		Tree tree = new Tree();
 		tree.addNode("root-node").setAttach(el_data);
@@ -203,19 +239,29 @@ public class AutoSearch {
 							System.out.println("root-node url :"+url);
 							driver.get(url);
 						}else {
-							String cssSelectorStr = ( (ElementData)to_root_list.get(i).getAttach() ).getCssSelector();
+							String cssSelectorStr = ( (ElementData)to_root_list.get(i).getAttach() ).getXpath();
 							System.out.println("cssSelectorStr : "+cssSelectorStr);
-							By temp_selector = By.cssSelector(cssSelectorStr);
-							WebElement temp_el = driver.findElement(temp_selector);
+							By a_tag_by = By.xpath(cssSelectorStr);
+							WebElement temp_el = driver.findElement(a_tag_by);
 							temp_el.click();
 						}
 						
 						wdw.until(ExpectedConditions.elementToBeClickable(By.tagName("body")));
 					}
-					System.out.println("테스트 : "+driver.getCurrentUrl());
+					
+					parent_current_url = driver.getCurrentUrl();
 				}
 				
 				List<WebElement> a_list = driver.findElements(a_tag);
+				
+				//테스트 코드
+				if(level != 0) {
+					System.out.println("최총 url : "+parent_current_url);
+					for(WebElement ttt : a_list) {
+						System.out.println(ttt.getTagName()+"==="+ttt.getText());
+					}
+					//return;
+				}
 				
 				for(int i = 0,length = a_list.size() ; i < length ; i++) {
 					try {
@@ -227,14 +273,19 @@ public class AutoSearch {
 						
 					}catch(StaleElementReferenceException e) {
 						a_list = driver.findElements(a_tag);
+						System.out.println("renew a list size : "+a_list.size());
 						el = a_list.get(i);
 					}
-					String selector = "a[href='"+el.getAttribute("href")+"']";
+					
+					System.out.println("zzzzz : "+el.getAttribute("sdfasdfsdafsadfa"));
+					String selector = "//a[@href=\""+el.getAttribute("href")+"\"]";
 					el.click();
 					
 					wdw.until(ExpectedConditions.elementToBeClickable(By.tagName("body")));
 					
 					String child_current_url = driver.getCurrentUrl();
+					
+					System.out.println(child_current_url);
 					
 					//부모 - 자식간 url이 동일함
 					if(parent_current_url.indexOf(child_current_url) != -1 || child_current_url.indexOf(parent_current_url) != -1) {
@@ -251,17 +302,24 @@ public class AutoSearch {
 						System.out.println("부모 - 자식간 url이 동일하지 않음 : "+parent_current_url+"<==>"+child_current_url);
 						
 						el_data = new ElementData();
-						el_data.setCssSelector(selector);
+						el_data.setXpath(selector);
 						
 						tree.addNode(level+"-"+i, parent_identifier).setAttach(el_data);
 						
+						System.out.println("test url : "+parent_current_url+Util.getQueryString(driver.findElements(input_hidden)));
 						driver.get(parent_current_url+Util.getQueryString(driver.findElements(input_hidden)));
 						
 						wdw.until(ExpectedConditions.elementToBeClickable(By.tagName("body")));
 					}
 				}
 			}
+			//테스트 코드
+			if(level != 0) {
+				//return;
+			}
+			
 			level++;
+			System.out.println("\n\n\n");
 		}
 		
 		tree.display("root-node");
@@ -270,7 +328,7 @@ public class AutoSearch {
 	/*
 	 * By 테스트
 	 */
-	@Test
+	//@Test
 	public void test2_3() throws Exception{
 		
 		//a tag의 href를 검색하기 위해서 xpath를 이용하도록 처리 cssSelector에는 href를 이용하여 검색하는 기능이 없음

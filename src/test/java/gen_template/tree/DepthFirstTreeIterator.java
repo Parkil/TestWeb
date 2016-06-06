@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 /*
- * ���̿켱 ��ȸ
  * See URL: http://en.wikipedia.org/wiki/Depth-first_search
  */
 public class DepthFirstTreeIterator implements Iterator<Node> {

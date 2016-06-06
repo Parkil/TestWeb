@@ -7,7 +7,6 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /*
- * �ʺ�켱 ��ȸ
  * See URL: http://en.wikipedia.org/wiki/Breadth-first_search
  */
 public class BreadthFirstTreeIterator implements Iterator<Node> {
