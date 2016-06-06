@@ -131,6 +131,9 @@
 	</bean>
 	<!-- /File Upload -->
 	
+	<!-- @Valid 어노테이션을 사용하려면 선언해야함 -->
+	<mvc:annotation-driven/>
+	
 	<!-- Interceptor -->
 	<mvc:interceptors>
 		<mvc:interceptor>

@@ -17,7 +17,8 @@ package egovframework.example.sample.service;
 
 import java.math.BigDecimal;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.validation.constraints.NotNull;
+
 import org.springframework.format.annotation.NumberFormat;
 
 import egovframework.example.cmmn.service.FileVO;
@@ -39,6 +40,7 @@ public class SampleVO extends SampleDefaultVO {
 	private static final long serialVersionUID = 1L;
 
 	/** 아이디 */
+	@NotNull(message = "ID는 필수값입니다.") //@Valid 어노테이션에서 검증할 유효성을 어노테이션으로 지정
 	private String id;
 
 	/** 이름 */
