@@ -2,8 +2,6 @@ package gen_template.util;
 
 import java.util.List;
 
-import javax.naming.OperationNotSupportedException;
-
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoAlertPresentException;
@@ -17,7 +15,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import gen_template.ElementData;
 import gen_template.tree.Node;
 import gen_template.tree.Tree;
-import util.Util;
 
 public class GenTemplateUtil {
 	/** WebElement에서 xpath정보(By에서 사용)를 반환
@@ -62,37 +59,43 @@ public class GenTemplateUtil {
 	 */
 	public static Tree searchClickableElement(By search_tag, Tree tree, WebDriver driver){
 		WebDriverWait wdw = new WebDriverWait(driver,10); 
-		By input_hidden = By.cssSelector("input[type=hidden]"); //input hidden 검색 by;
 		
 		WebElement el = null;
-		String parent_current_url = driver.getCurrentUrl(); //부모 페이지 url
-		
 		List<Node> node_list = null;
 		int level = 0;
 		
+		
 		while( (node_list = tree.getNodeListByLevel(level)).size() != 0 ) {
+			String last_node_xpath = null;
+			
+			node_list_for :
 			for(Node node : node_list) {
-				String parent_identifier = node.getIdentifier();
-				
 				List<Node> to_root_list = null;
 				
-				//level이 0(최초 화면)이 아닐경우 해당 화면으로 이동(이동하는 방식은 node마다 저장된 By selector를 이용하여 클릭가능한 요소를 클릭하는 방식으로 처리)
+				//해당 node에 해당하는 화면으로 이동(level 0이면 url이동 그외는 node에 저장된 xpath를 가져와서 요소를 클릭하는 방식으로 처리)
 				if(level != 0) {
 					to_root_list = tree.getNodeListToRoot(node.getIdentifier());
 					
-					for(Node temp_node : to_root_list) {
+					for(int i = 0,len = to_root_list.size(); i<len ; i++) {
+						Node temp_node = to_root_list.get(i);
+						
 						if(temp_node.getLevel() == 0) {
 							String root_url = ((ElementData)temp_node.getAttach()).getUrl();
 							driver.get(root_url);
 						}else {
 							String temp_xpath = ((ElementData)temp_node.getAttach()).getXpath();
-							By temp = By.xpath(temp_xpath);
-							//테스트 코드
-							try {
-								driver.findElement(temp).click();
-							}catch(Exception e) {
-								System.out.println("level : "+level);
-								continue;
+							List<WebElement> list = driver.findElements(By.xpath(temp_xpath));
+							
+							//마지막 요소의 xpath값 저장
+							if(i == len-1) {
+								last_node_xpath = temp_xpath;
+							}
+							
+							//해당 xpath가 존재하지 않을 경우(해당 node에 해당하는 페이지가 삭제되었거나 수정되어 찾을수 없는 경우)에는 해당  node자체를 continue처리
+							if(list.size() == 0) {
+								continue node_list_for;
+							}else {
+								list.get(0).click();
 							}
 						}
 						
@@ -100,35 +103,26 @@ public class GenTemplateUtil {
 					}
 				}
 				
-				parent_current_url = driver.getCurrentUrl();
+				String parent_current_url = driver.getCurrentUrl(); //검색대상 url
 				
 				List<WebElement> a_list = driver.findElements(search_tag);
+				
 				for(int i = 0,length = a_list.size() ; i < length ; i++) {
-					
 					try {
 						el = a_list.get(i);
 						
+						//삭제대상 코드
 						if(el.getText().intern() == "로그아웃".intern()) {
 							continue;
 						}
 						
 					}catch(StaleElementReferenceException e) {
+						//여기서 가져온 a_list와 원래 a_list의 내용이 다를경우의 처리로직을 생각해 봐야 함
 						a_list = driver.findElements(search_tag);
-						
-						//테스트용 코드
-						if(i > a_list.size()) {
-							i = a_list.size();
-							for(WebElement val : a_list) {
-								System.out.println(val.getAttribute("href"));
-							}
-						}
-						
 						el = a_list.get(i);
 					}catch(NoSuchElementException ne) {
 						System.out.println("해당 요소가 존재하지 않음");
 					}
-					
-					System.out.println("href : "+el.getAttribute("href"));
 					
 					ElementData el_data = new ElementData();
 					el_data.setXpath(getXpathStr(el));
@@ -142,37 +136,22 @@ public class GenTemplateUtil {
 					
 					//부모 - 자식간 url이 동일함(검색 이나 외부 연동 또는 팝업처럼 페이지를 이동하지 않는 로직)
 					if(parent_current_url.indexOf(child_current_url) != -1 || child_current_url.indexOf(parent_current_url) != -1) {
-						
-						//System.out.println("동일 : "+el_data.getXpath());
-					}else { //부모 - 자식간 url이 동일하지 않음
-						
+						//나중에 처리로직 삽입
+					}else { //부모 - 자식간 url이 동일하지 않음 - ElementData에 값을 입력하고 전  URL로 이동처리
+						String parent_identifier = node.getIdentifier();
 						ElementData parent_el_data = (ElementData)tree.getNode(parent_identifier).getAttach();
-						//System.out.println("부모 노드 url : "+parent_el_data.getUrl());
 						
+						//전 URL로 이동하는 부분에 대한 로직 수정 필요
 						/*
 						 * input hidden으로 queryString을 만들어서 url을 이동하는 방식은 Article이 메인이 되고 List가 sub가 되어서
 						 * Article->List->Article로 돌아올때 문제가 생기는 경우가 있다. 이를 방지하기 위해서 to_root_list가 있을경우에는 
 						 * to_root_list의 마지막 요소(현재 클릭가능한 요소를 검색 하는 페이지)의 xpath를 검색해서 클릭하도록 처리한다.
 						 */
 						if(to_root_list != null) {
-							int len = to_root_list.size();
-							
-							Node this_node = to_root_list.get(len-1);
-							
-							String temp_xpath = ((ElementData)this_node.getAttach()).getXpath();
-							By temp = By.xpath(temp_xpath);
-							try {
-								driver.findElement(temp).click();
-							}catch(NoSuchElementException e) {
-								el_data.setIs_update_or_delete(true);
-								System.out.println("해당 요소가 존재하지 않음. 수정되거나 삭제되었을 가능성이 있음 다음요소로 이동");
-							}
-						}else {
-							try {
-								driver.get(parent_current_url+Util.getQueryString(driver.findElements(input_hidden)));
-							} catch (OperationNotSupportedException e) {
-								e.printStackTrace();
-							}
+							By temp = By.xpath(last_node_xpath);
+							driver.findElement(temp).click();
+						}else { //부모가  tree level 0인 경우
+							driver.get(parent_current_url);
 						}
 						
 						wdw.until(ExpectedConditions.elementToBeClickable(By.tagName("body")));
@@ -183,12 +162,6 @@ public class GenTemplateUtil {
 						}
 						
 						tree.addNode(level+"-"+i, parent_identifier).setAttach(el_data);
-						
-						//해당 요소가 존재하지 않을 경우에는 더이상의 검색을 중지하고 다음 검색요소로 이동처리
-						if(el_data.isIs_update_or_delete()) {
-							break;
-						}
-						
 					}
 				}
 			}

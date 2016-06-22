@@ -488,6 +488,14 @@
 			<version>5.2.4.Final</version>
 		</dependency>
 		<!-- /javax @Valid  -->
+		
+		<!-- monte video recoder  -->
+		<dependency>
+			<groupId>com.pojosontheweb</groupId>
+			<artifactId>monte-repack</artifactId>
+			<version>1.0.1</version>
+		</dependency>
+		<!-- /monte video recoder  -->
 	</dependencies>
 
 	<build>
