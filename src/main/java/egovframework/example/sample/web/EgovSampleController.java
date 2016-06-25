@@ -164,7 +164,7 @@ public class EgovSampleController {
 		
 		System.out.println("----"+ToStringBuilder.reflectionToString(sampleVO));
 		System.out.println(ToStringBuilder.reflectionToString(sampleVO.getFilevo()));
-		sampleVO.getFilevo().transferFile("c:/web-down");
+		//sampleVO.getFilevo().transferFile("c:/web-down");
 		
 		/*
 		//기존에 MultipartRequest를 인자로 받아서 파일 업로드를 처리하는 방식
@@ -181,6 +181,7 @@ public class EgovSampleController {
 		 * @Valid 어노테이션 + VO 어노테이션으로 유효성검사를 하려면 dispatcher-servlet.xml에서 <mvc:annotation-driven/>을 선언해 주어야 함
 		 * 
 		 * @Valid 어노테이션과 context-validator.xml > validator.xml을 병용하는것도 가능
+		 * 
 		 */
 		beanValidator.validate(sampleVO, bindingResult);
 

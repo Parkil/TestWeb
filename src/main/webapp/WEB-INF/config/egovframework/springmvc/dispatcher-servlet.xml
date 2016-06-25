@@ -131,8 +131,8 @@
 	</bean>
 	<!-- /File Upload -->
 	
-	<!-- @Valid 어노테이션을 사용하려면 선언해야함 -->
-	<mvc:annotation-driven/>
+	<!-- @Valid 어노테이션을 사용하려면 선언해야함 <mvc:annotation-driven/>을 선언하면 위의 Converter설정과 충돌이 나서 Converter가 실행이 안됨 이를 해결할 방법을 찾아야 함-->
+	<!-- <mvc:annotation-driven/> -->
 	
 	<!-- Interceptor -->
 	<mvc:interceptors>
