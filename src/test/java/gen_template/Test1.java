@@ -51,10 +51,8 @@ public class Test1 {
 	 */
 	@Test
 	public void test() {
-		InjectJQuery ij = new InjectJQuery();
-		ij.injectJQueryIfNone(je);
 		
-		driver.get("http://localhost:8082");
+		driver.get("http://localhost:8080");
 		
 		WebElement id = driver.findElement(By.cssSelector("#id"));
 		WebElement pw = driver.findElement(By.cssSelector("#pw"));
@@ -67,6 +65,22 @@ public class Test1 {
 		WebDriverWait wdw = new WebDriverWait(driver,10);
 		wdw.until(ExpectedConditions.titleContains("List"));
 	}
+	
+	//@Test
+	public void test4() {
+		InjectJQuery ij = new InjectJQuery();
+		ij.injectJQueryIfNone(je);
+		/*
+		 * history.go(-1)은 executeAsyncScript에서 실행해야 정상적으로 작동한다.
+		 * executeScript에서 실행하면 작동하지 않음.
+		 */
+	
+		//je.executeAsyncScript("function zzz(){ history.go(-1); } zzz();"); 
+		//je.executeAsyncScript("history.go(-1)");
+		
+		
+		je.executeScript("$('a').attr('target','_blank');");
+	}
 
 	@Test
 	public void test1() throws Exception{
@@ -74,8 +88,9 @@ public class Test1 {
 		
 		//root-node를 수동으로 입력
 		ElementData el_data = new ElementData();
-		el_data.setXpath("root");
-		el_data.setUrl(driver.getCurrentUrl());
+		//el_data.setXpath("root");
+		//el_data.setUrl(driver.getCurrentUrl());
+		el_data.setUrl("http://localhost:8080");
 		Tree tree = new Tree();
 		tree.addNode("root-node").setAttach(el_data);
 		

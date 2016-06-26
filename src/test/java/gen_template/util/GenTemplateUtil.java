@@ -1,9 +1,11 @@
 package gen_template.util;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
@@ -66,7 +68,6 @@ public class GenTemplateUtil {
 		
 		
 		while( (node_list = tree.getNodeListByLevel(level)).size() != 0 ) {
-			String last_node_xpath = null;
 			
 			node_list_for :
 			for(Node node : node_list) {
@@ -86,11 +87,6 @@ public class GenTemplateUtil {
 							String temp_xpath = ((ElementData)temp_node.getAttach()).getXpath();
 							List<WebElement> list = driver.findElements(By.xpath(temp_xpath));
 							
-							//마지막 요소의 xpath값 저장
-							if(i == len-1) {
-								last_node_xpath = temp_xpath;
-							}
-							
 							//해당 xpath가 존재하지 않을 경우(해당 node에 해당하는 페이지가 삭제되었거나 수정되어 찾을수 없는 경우)에는 해당  node자체를 continue처리
 							if(list.size() == 0) {
 								continue node_list_for;
@@ -105,6 +101,12 @@ public class GenTemplateUtil {
 				
 				String parent_current_url = driver.getCurrentUrl(); //검색대상 url
 				
+				//Tree에 동일한 URL이 들어있으면 cotinue처리
+				if(isUrlContain(tree,parent_current_url)) {
+					//System.out.println("sdfsafasdf : "+parent_current_url);
+					//continue;
+				}
+				
 				List<WebElement> a_list = driver.findElements(search_tag);
 				
 				for(int i = 0,length = a_list.size() ; i < length ; i++) {
@@ -112,10 +114,9 @@ public class GenTemplateUtil {
 						el = a_list.get(i);
 						
 						//삭제대상 코드
-						if(el.getText().intern() == "로그아웃".intern()) {
+						if(el.getText().intern() == "로그아웃".intern() || el.getText().intern() == "history.back()".intern()) {
 							continue;
 						}
-						
 					}catch(StaleElementReferenceException e) {
 						//여기서 가져온 a_list와 원래 a_list의 내용이 다를경우의 처리로직을 생각해 봐야 함
 						a_list = driver.findElements(search_tag);
@@ -141,24 +142,39 @@ public class GenTemplateUtil {
 						String parent_identifier = node.getIdentifier();
 						ElementData parent_el_data = (ElementData)tree.getNode(parent_identifier).getAttach();
 						
-						//전 URL로 이동하는 부분에 대한 로직 수정 필요
 						/*
-						 * input hidden으로 queryString을 만들어서 url을 이동하는 방식은 Article이 메인이 되고 List가 sub가 되어서
-						 * Article->List->Article로 돌아올때 문제가 생기는 경우가 있다. 이를 방지하기 위해서 to_root_list가 있을경우에는 
-						 * to_root_list의 마지막 요소(현재 클릭가능한 요소를 검색 하는 페이지)의 xpath를 검색해서 클릭하도록 처리한다.
+						 * to_root_list가 null이 아닌 경우에는 80라인과 동일한 로직으로 대상 페이지로 이동하고
+						 * null인 경우(level 0)에는 부모 url로 바로 이동한다. 
 						 */
 						if(to_root_list != null) {
-							By temp = By.xpath(last_node_xpath);
-							driver.findElement(temp).click();
+							for(int z = 0,len = to_root_list.size(); z<len ; z++) {
+								Node temp_node = to_root_list.get(z);
+								
+								if(temp_node.getLevel() == 0) {
+									String root_url = ((ElementData)temp_node.getAttach()).getUrl();
+									driver.get(root_url);
+								}else {
+									String temp_xpath = ((ElementData)temp_node.getAttach()).getXpath();
+									List<WebElement> list = driver.findElements(By.xpath(temp_xpath));
+									
+									if(list.size() == 0) {
+										continue;
+									}else {
+										list.get(0).click();
+									}
+								}
+								
+								wdw.until(ExpectedConditions.elementToBeClickable(By.tagName("body")));
+							}
 						}else { //부모가  tree level 0인 경우
 							driver.get(parent_current_url);
 						}
 						
 						wdw.until(ExpectedConditions.elementToBeClickable(By.tagName("body")));
-						
-						//현재 url과 부모 node의 url이 동일한 경우에는 tree에 입력을 하지 않도록 처리한다.
-						if(driver.getCurrentUrl().intern() == parent_el_data.getUrl().intern()) {
-							continue;
+			
+						//현재 url과 부모 node의 url이 동일한 경우에는 tree에 입력을 하지 않도록 처리한다.(이 로직 검토 필요)
+						if(driver.getCurrentUrl().intern() == parent_el_data.getUrl().intern()) { //현재 여기로직에서 전부 continue가 걸리고 있음
+							//continue;
 						}
 						
 						tree.addNode(level+"-"+i, parent_identifier).setAttach(el_data);
@@ -193,5 +209,29 @@ public class GenTemplateUtil {
 		}finally {
 			driver.switchTo().window(parent);
 		}
+	}
+	
+	/** Tree에 인자로 들어간 url이 존재하는지 확인
+	 * @param tree url을 확인할 tree구조
+	 * @param url 확인하고자 하는 url
+	 * @return true or false
+	 */
+	public static boolean isUrlContain(Tree tree, String url) {
+		Iterator<Node> iter = tree.iterator("root-node");
+		
+		while(iter.hasNext()) {
+			String node_url = ((ElementData)iter.next().getAttach()).getUrl();
+			
+			/*
+			if(url.indexOf(node_url) != -1 || node_url.indexOf(url) != -1) {
+				return true;
+			}*/
+			
+			if(url.equals(node_url)) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 }
