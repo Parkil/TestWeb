@@ -69,6 +69,14 @@ public class GenTemplateUtil {
 		
 		while( (node_list = tree.getNodeListByLevel(level)).size() != 0 ) {
 			
+			System.out.println("=======노드 리스트 내용 Level"+level+"========");
+			for(Node node : node_list) {
+				ElementData zzz = (ElementData)node.getAttach();
+				System.out.print(zzz.getXpath()+"=");
+			}
+			System.out.println();
+			System.out.println("=======노드 리스트 내용 끝========");
+			
 			node_list_for :
 			for(Node node : node_list) {
 				List<Node> to_root_list = null;
@@ -102,11 +110,12 @@ public class GenTemplateUtil {
 				String parent_current_url = driver.getCurrentUrl(); //검색대상 url
 				
 				//Tree에 동일한 URL이 들어있으면 cotinue처리
-				if(isUrlContain(tree,parent_current_url)) {
-					//System.out.println("sdfsafasdf : "+parent_current_url);
-					//continue;
+				if(isUrlContain(tree, parent_current_url, level)) {
+					System.out.println("제외 url : "+parent_current_url);
+					continue;
 				}
 				
+				//해당페이지의 a link를 검색,클릭하여 이동하는 URL을 Tree 하위 Level에 저장
 				List<WebElement> a_list = driver.findElements(search_tag);
 				
 				for(int i = 0,length = a_list.size() ; i < length ; i++) {
@@ -118,6 +127,8 @@ public class GenTemplateUtil {
 							continue;
 						}
 					}catch(StaleElementReferenceException e) {
+						System.out.println("a list refresh url : "+driver.getCurrentUrl());
+						
 						//여기서 가져온 a_list와 원래 a_list의 내용이 다를경우의 처리로직을 생각해 봐야 함
 						a_list = driver.findElements(search_tag);
 						el = a_list.get(i);
@@ -142,6 +153,7 @@ public class GenTemplateUtil {
 						String parent_identifier = node.getIdentifier();
 						ElementData parent_el_data = (ElementData)tree.getNode(parent_identifier).getAttach();
 						
+						tree.addNode(level+"-"+i, parent_identifier).setAttach(el_data);
 						/*
 						 * to_root_list가 null이 아닌 경우에는 80라인과 동일한 로직으로 대상 페이지로 이동하고
 						 * null인 경우(level 0)에는 부모 url로 바로 이동한다. 
@@ -173,11 +185,9 @@ public class GenTemplateUtil {
 						wdw.until(ExpectedConditions.elementToBeClickable(By.tagName("body")));
 			
 						//현재 url과 부모 node의 url이 동일한 경우에는 tree에 입력을 하지 않도록 처리한다.(이 로직 검토 필요)
-						if(driver.getCurrentUrl().intern() == parent_el_data.getUrl().intern()) { //현재 여기로직에서 전부 continue가 걸리고 있음
-							//continue;
-						}
+						if(driver.getCurrentUrl().intern() != parent_el_data.getUrl().intern()) { //현재 여기로직에서 전부 continue가 걸리고 있음
 						
-						tree.addNode(level+"-"+i, parent_identifier).setAttach(el_data);
+						}
 					}
 				}
 			}
@@ -185,6 +195,11 @@ public class GenTemplateUtil {
 			tree.display("root-node");
 			System.out.println("\n\n");
 			level++;
+			
+			//테스트용 코드
+			if(level == 2) {
+				break;
+			}
 		}
 		
 		return tree;
@@ -205,31 +220,45 @@ public class GenTemplateUtil {
 				driver.switchTo().window(parent); //alert을 닫은후 포커스를 다시 부모창으로 이동해야 다음 alert을 처리할수 있음.
 			}
 		}catch(NoAlertPresentException nape) {
-			System.out.println("No Alert Presented");
+			//System.out.println("No Alert Presented");
 		}finally {
 			driver.switchTo().window(parent);
 		}
 	}
 	
-	/** Tree에 인자로 들어간 url이 존재하는지 확인
+	/**Tree에 인자로 들어간 url이 존재하는지 확인. 인자로 주어인 level의 Node는 검색조건에서 제외됨.
 	 * @param tree url을 확인할 tree구조
 	 * @param url 확인하고자 하는 url
+	 * @param level 검색에서 제외하고자하는 Tree Level
 	 * @return true or false
 	 */
-	public static boolean isUrlContain(Tree tree, String url) {
+	public static boolean isUrlContain(Tree tree, String url, int level) {
 		Iterator<Node> iter = tree.iterator("root-node");
 		
+		//String replace_url = url.replaceAll("\\?.*$", ""); //?~뒤의 파라메터 부분 제거
+		
 		while(iter.hasNext()) {
-			String node_url = ((ElementData)iter.next().getAttach()).getUrl();
+			Node node = iter.next();
+			
+			if(node.getLevel() == level) {
+				continue;
+			}
+			
+			/*
+			if(node.getIdentifier().intern() == "root-node".intern()) { //최상위 노드는 제외하고 검색
+				continue;
+			}*/
+			
+			String node_url = ((ElementData)node.getAttach()).getUrl();
+			
+			if(url.equals(node_url)) {
+				return true;
+			}
 			
 			/*
 			if(url.indexOf(node_url) != -1 || node_url.indexOf(url) != -1) {
 				return true;
 			}*/
-			
-			if(url.equals(node_url)) {
-				return true;
-			}
 		}
 		
 		return false;

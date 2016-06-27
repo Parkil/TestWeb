@@ -77,7 +77,7 @@ public class Tree {
 		} else {
 			String tabs = String.format("%0" + depth + "d", 0).replace("0", "    "); // 4 spaces
 			ElementData ed = (ElementData)nodes.get(identifier).getAttach();
-			System.out.println(tabs + nodes.get(identifier).getIdentifier()+"=="+nodes.get(identifier).getLevel()+"=="+ed.getXpath());
+			System.out.println(tabs + nodes.get(identifier).getIdentifier()+"=="+nodes.get(identifier).getLevel()+"=="+ed.getXpath()+"=="+ed.getUrl());
 		}
 		depth++;
 		for (String child : children) {
