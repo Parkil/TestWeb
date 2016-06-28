@@ -95,8 +95,6 @@ public class Test1 {
 		tree.addNode("root-node").setAttach(el_data);
 		
 		GenTemplateUtil.searchClickableElement(a_tag, tree, driver);
-		
-		tree.display("root-node");
 	}
 	
 	//@Test

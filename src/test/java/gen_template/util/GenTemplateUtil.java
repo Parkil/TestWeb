@@ -149,6 +149,7 @@ public class GenTemplateUtil {
 					//부모 - 자식간 url이 동일함(검색 이나 외부 연동 또는 팝업처럼 페이지를 이동하지 않는 로직)
 					if(parent_current_url.indexOf(child_current_url) != -1 || child_current_url.indexOf(parent_current_url) != -1) {
 						//나중에 처리로직 삽입
+						System.out.println("동일한 url : "+el_data.getXpath());
 					}else { //부모 - 자식간 url이 동일하지 않음 - ElementData에 값을 입력하고 전  URL로 이동처리
 						String parent_identifier = node.getIdentifier();
 						ElementData parent_el_data = (ElementData)tree.getNode(parent_identifier).getAttach();
@@ -170,7 +171,7 @@ public class GenTemplateUtil {
 									List<WebElement> list = driver.findElements(By.xpath(temp_xpath));
 									
 									if(list.size() == 0) {
-										continue;
+										continue node_list_for; //수정한 부분
 									}else {
 										list.get(0).click();
 									}
