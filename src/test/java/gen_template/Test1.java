@@ -70,6 +70,9 @@ public class Test1 {
 	public void test4() {
 		InjectJQuery ij = new InjectJQuery();
 		ij.injectJQueryIfNone(je);
+		
+		driver.get("http://www.lezhin.com/ko/comic/fury/3");
+		System.out.println(je.executeScript("return '${param}'"));
 		/*
 		 * history.go(-1)은 executeAsyncScript에서 실행해야 정상적으로 작동한다.
 		 * executeScript에서 실행하면 작동하지 않음.
@@ -79,7 +82,7 @@ public class Test1 {
 		//je.executeAsyncScript("history.go(-1)");
 		
 		
-		je.executeScript("$('a').attr('target','_blank');");
+		//je.executeScript("$('a').attr('target','_blank');");
 	}
 
 	@Test
@@ -88,8 +91,6 @@ public class Test1 {
 		
 		//root-node를 수동으로 입력
 		ElementData el_data = new ElementData();
-		//el_data.setXpath("root");
-		//el_data.setUrl(driver.getCurrentUrl());
 		el_data.setUrl("http://localhost:8080");
 		Tree tree = new Tree();
 		tree.addNode("root-node").setAttach(el_data);

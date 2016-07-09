@@ -80,7 +80,7 @@ public class Util {
 		
 		System.setProperty("webdriver.chrome.driver", sb.toString()); //driver위치 반환
 		ChromeOptions co = new ChromeOptions();
-		co.setBinary("D:/Util/GoogleChromePortable/App/Chrome-bin/chrome.exe"); //cannot find chrome binary 예외 발생시에는 chrome실행파일을 수동으로 지정해 주어야 함
+		co.setBinary("C:/Custom/GoogleChromePortable/App/Chrome-bin/chrome.exe"); //cannot find chrome binary 예외 발생시에는 chrome실행파일을 수동으로 지정해 주어야 함
 		return new ChromeDriver(co);
 	}
 	

@@ -1,11 +1,13 @@
 package gen_template.util;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
@@ -19,6 +21,9 @@ import gen_template.tree.Node;
 import gen_template.tree.Tree;
 
 public class GenTemplateUtil {
+	private static Set<String> xpath_list = new HashSet<String>(); //xpath를 저장하는 리스트(중복제거를 위해 Set을사용)
+
+	
 	/** WebElement에서 xpath정보(By에서 사용)를 반환
 	 * @param el WebElement
 	 * @return xpath 선택 문자열
@@ -109,10 +114,11 @@ public class GenTemplateUtil {
 				
 				String parent_current_url = driver.getCurrentUrl(); //검색대상 url
 				
-				//Tree에 동일한 URL이 들어있으면 cotinue처리
+				
+				//Tree에 동일한 URL이 들어있으면 cotinue처리(현재 level의 url은 제외처리)
 				if(isUrlContain(tree, parent_current_url, level)) {
-					System.out.println("제외 url : "+parent_current_url);
-					continue;
+					//System.out.println("제외 url : "+parent_current_url);
+					//continue;
 				}
 				
 				//해당페이지의 a link를 검색,클릭하여 이동하는 URL을 Tree 하위 Level에 저장
@@ -127,8 +133,6 @@ public class GenTemplateUtil {
 							continue;
 						}
 					}catch(StaleElementReferenceException e) {
-						System.out.println("a list refresh url : "+driver.getCurrentUrl());
-						
 						//여기서 가져온 a_list와 원래 a_list의 내용이 다를경우의 처리로직을 생각해 봐야 함
 						a_list = driver.findElements(search_tag);
 						el = a_list.get(i);
@@ -138,6 +142,15 @@ public class GenTemplateUtil {
 					
 					ElementData el_data = new ElementData();
 					el_data.setXpath(getXpathStr(el));
+					
+					
+					//해당 xpath가 기존에 존재하는 Xpath일 경우 삭제버튼을 클릭하지 않고 continue처리 - 이부분은 현재 무한루프가 발생하기 때문에 추후 보완이 필요함
+					if(xpath_list.contains(el_data.getXpath())) {
+						System.out.println("해당 xpath는 delete_xpath_list에 존재함 : "+el_data.getXpath());
+						//tree.addNode(level+"-"+i, node.getIdentifier()).setAttach(el_data);
+						continue;
+					}
+					
 					el.click();
 					passAlertConfirm(driver);
 					
@@ -152,7 +165,6 @@ public class GenTemplateUtil {
 						System.out.println("동일한 url : "+el_data.getXpath());
 					}else { //부모 - 자식간 url이 동일하지 않음 - ElementData에 값을 입력하고 전  URL로 이동처리
 						String parent_identifier = node.getIdentifier();
-						ElementData parent_el_data = (ElementData)tree.getNode(parent_identifier).getAttach();
 						
 						tree.addNode(level+"-"+i, parent_identifier).setAttach(el_data);
 						/*
@@ -170,8 +182,9 @@ public class GenTemplateUtil {
 									String temp_xpath = ((ElementData)temp_node.getAttach()).getXpath();
 									List<WebElement> list = driver.findElements(By.xpath(temp_xpath));
 									
-									if(list.size() == 0) {
-										continue node_list_for; //수정한 부분
+									if(list.size() == 0) { //해당 xpath로 Node가 검색이 되지 않는 경우(해당 Node가 삭제 나 수정관련 기능일 경우)
+										xpath_list.add(el_data.getXpath());
+										continue node_list_for; 
 									}else {
 										list.get(0).click();
 									}
@@ -181,14 +194,10 @@ public class GenTemplateUtil {
 							}
 						}else { //부모가  tree level 0인 경우
 							driver.get(parent_current_url);
+							wdw.until(ExpectedConditions.elementToBeClickable(By.tagName("body")));
 						}
 						
-						wdw.until(ExpectedConditions.elementToBeClickable(By.tagName("body")));
-			
-						//현재 url과 부모 node의 url이 동일한 경우에는 tree에 입력을 하지 않도록 처리한다.(이 로직 검토 필요)
-						if(driver.getCurrentUrl().intern() != parent_el_data.getUrl().intern()) { //현재 여기로직에서 전부 continue가 걸리고 있음
-						
-						}
+						xpath_list.add(el_data.getXpath());
 					}
 				}
 			}
@@ -196,12 +205,9 @@ public class GenTemplateUtil {
 			tree.display("root-node");
 			System.out.println("\n\n");
 			level++;
-			
-			//테스트용 코드
-			if(level == 2) {
-				break;
-			}
 		}
+		
+		System.out.println("삭제관련 xpath 정보 : "+Arrays.toString(xpath_list.toArray()));
 		
 		return tree;
 	}
@@ -245,21 +251,11 @@ public class GenTemplateUtil {
 				continue;
 			}
 			
-			/*
-			if(node.getIdentifier().intern() == "root-node".intern()) { //최상위 노드는 제외하고 검색
-				continue;
-			}*/
-			
 			String node_url = ((ElementData)node.getAttach()).getUrl();
 			
 			if(url.equals(node_url)) {
 				return true;
 			}
-			
-			/*
-			if(url.indexOf(node_url) != -1 || node_url.indexOf(url) != -1) {
-				return true;
-			}*/
 		}
 		
 		return false;
