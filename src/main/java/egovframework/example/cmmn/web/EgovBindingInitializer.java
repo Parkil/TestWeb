@@ -22,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.validation.Validator;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.support.WebBindingInitializer;
 import org.springframework.web.context.request.WebRequest;
@@ -42,6 +44,8 @@ public class EgovBindingInitializer implements WebBindingInitializer {
 	@Autowired
 	private ConversionService conversionService; //converter 서비스(dispatcher-servlet.xml 에서 id를 conversionService로 지정한 bean을 Autowired를 이용하여 자동으로 DI처리)
 	
+	@Autowired
+	private Validator validator; //validator 서비스 (dispatcher-servlet.xml 에서 id를 validator로 지정한 bean을 Autowired를 이용하여 자동으로 DI처리)
 	/**
 	 * initBinder
 	 * 
@@ -58,6 +62,7 @@ public class EgovBindingInitializer implements WebBindingInitializer {
 		
 		//converter 서비스를 지정
 		binder.setConversionService(conversionService);
+		binder.setValidator(validator);
 	}
 
 }

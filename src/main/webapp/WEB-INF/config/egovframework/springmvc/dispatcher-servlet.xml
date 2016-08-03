@@ -42,7 +42,7 @@
 		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository" />
 	</context:component-scan>
 	
-	<!--
+	<!-- 
 		Controller호출시 binding 되는 파라메터를 property-editor,converter등을 이용하여 자동으로 형변환 및 formatting을 진행하는 bean 지정
 		여기에서 바로 converter나 property-editor 설정을 가진 bean을 지정할 수도 있고 아래 처럼 class를 따로 구성하여 bean을 지정할 수도 있다.
 		
@@ -57,11 +57,16 @@
 		</property>
 	</bean>
 	
+	<!-- @Valid 어노테이션을 사용하려면 보통 <mvc:annotation-driven/>을 선언하나 기존 설정과 충돌하여 사용하지 못할 경우에는 Validator만 따로 선언하여 webBindingInitializer에 지정한다. -->
+	<bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
+	
+	
 	<!-- Converter Config -->
 	
 	<!-- 웹에서는 아래 bean을 설정해 주어야 한다고하는데 지정하지 않아도 동작하는데에는 문제가 없음
 	<bean id="webBindingInitializer" class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">
 		<property name="conversionService" ref="conversionService"/>
+		<beans:property name="validator" ref="validator" />
 	</bean>
 	-->
 	
@@ -130,9 +135,6 @@
 		<property name="defaultEncoding" value="utf-8"/>
 	</bean>
 	<!-- /File Upload -->
-	
-	<!-- @Valid 어노테이션을 사용하려면 선언해야함 <mvc:annotation-driven/>을 선언하면 위의 Converter설정과 충돌이 나서 Converter가 실행이 안됨 이를 해결할 방법을 찾아야 함-->
-	<!-- <mvc:annotation-driven/> -->
 	
 	<!-- Interceptor -->
 	<mvc:interceptors>
