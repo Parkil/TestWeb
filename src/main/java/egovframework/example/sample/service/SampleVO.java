@@ -17,8 +17,9 @@ package egovframework.example.sample.service;
 
 import java.math.BigDecimal;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
+import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.format.annotation.NumberFormat;
 
 import egovframework.example.cmmn.service.FileVO;
@@ -40,19 +41,27 @@ public class SampleVO extends SampleDefaultVO {
 	private static final long serialVersionUID = 1L;
 
 	/** 아이디 */
-	@NotNull(message = "ID는 필수값입니다.") //@Valid 어노테이션에서 검증할 유효성을 어노테이션으로 지정
 	private String id;
 
 	/** 이름 */
+	@NotEmpty(message = "name은 필수값입니다.")
+	@Size(min=1,max=10,message="{errors.range}") //직접 메시지를 입력할수도 있고 다음과 같이 messageSource에 저장된 건을 가져다 쓸수도 있음.
 	private String name;
 
 	/** 내용 */
+	/*
+	 * @NotEmpty같이 hibernate Valid를 이용하는 경우+외부 메시지를 이용할 경우 WEB-INF/classes/ValidationMessages.properties에 지정된 메시지를 가져온다.
+	 * (Spring messageSource와 호환안됨)
+	 * spring messageSource와 같이 이용하게 하려면 LocalValidatorFactoryBean에서 설정을 하라고 하는데 이는 좀더 확인을 해봐야 함
+	 */
+	@NotEmpty(message = "{errors.required}") 
 	private String description;
 
 	/** 사용여부 */
 	private String useYn;
 
 	/** 등록자 */
+	@NotEmpty(message = "regUser는 필수값입니다.") //@Valid 어노테이션에서 검증할 유효성을 어노테이션으로 지정
 	private String regUser;
 	
 	/*
