@@ -3,14 +3,23 @@ package gen_template;
 public class ElementData {
 	private String xpath; //By xpath문자열
 	private String url; //url정보
-	private boolean is_update_or_delete = false; //해당 요소가 수정 또는 삭제 버튼인지 확인
+	private String alertText; //해당 요소를 클릭했을때 발생하는 alert문구(없을수도 있음)
+	private boolean isSameUrl = false; //해당 요소를 클릭전,후 url이 동일한지 여부
 	
-	public boolean isIs_update_or_delete() {
-		return is_update_or_delete;
+	public boolean isSameUrl() {
+		return isSameUrl;
 	}
 
-	public void setIs_update_or_delete(boolean is_update_or_delete) {
-		this.is_update_or_delete = is_update_or_delete;
+	public void setSameUrl(boolean isSameUrl) {
+		this.isSameUrl = isSameUrl;
+	}
+
+	public String getAlertText() {
+		return alertText;
+	}
+
+	public void setAlertText(String alertText) {
+		this.alertText = alertText;
 	}
 
 	public String getUrl() {

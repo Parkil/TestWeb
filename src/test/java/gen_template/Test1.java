@@ -1,7 +1,6 @@
 package gen_template;
 
 
-import static org.junit.Assert.assertEquals;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -18,8 +17,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import gen_template.tree.Tree;
-import gen_template.util.GenTemplateUtil;
-import util.InjectJQuery;
+import gen_template.util.AutoSearch;
 import util.Util;
 
 public class Test1 {
@@ -65,25 +63,6 @@ public class Test1 {
 		WebDriverWait wdw = new WebDriverWait(driver,10);
 		wdw.until(ExpectedConditions.titleContains("List"));
 	}
-	
-	//@Test
-	public void test4() {
-		InjectJQuery ij = new InjectJQuery();
-		ij.injectJQueryIfNone(je);
-		
-		driver.get("http://www.lezhin.com/ko/comic/fury/3");
-		System.out.println(je.executeScript("return '${param}'"));
-		/*
-		 * history.go(-1)은 executeAsyncScript에서 실행해야 정상적으로 작동한다.
-		 * executeScript에서 실행하면 작동하지 않음.
-		 */
-	
-		//je.executeAsyncScript("function zzz(){ history.go(-1); } zzz();"); 
-		//je.executeAsyncScript("history.go(-1)");
-		
-		
-		//je.executeScript("$('a').attr('target','_blank');");
-	}
 
 	@Test
 	public void test1() throws Exception{
@@ -91,11 +70,11 @@ public class Test1 {
 		
 		//root-node를 수동으로 입력
 		ElementData el_data = new ElementData();
-		el_data.setUrl("http://localhost:8080");
+		el_data.setUrl("http://localhost:8080/sample/egovSampleList.do");
 		Tree tree = new Tree();
 		tree.addNode("root-node").setAttach(el_data);
 		
-		GenTemplateUtil.searchClickableElement(a_tag, tree, driver);
+		AutoSearch.searchClickableElement(a_tag, tree, driver);
 	}
 	
 	//@Test

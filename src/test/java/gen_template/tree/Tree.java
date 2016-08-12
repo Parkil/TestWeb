@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import gen_template.ElementData;
 
@@ -64,7 +65,19 @@ public class Tree {
 		
 		return node;
 	}
-
+	
+	public void displayAllNode() {
+		Set<String> keySet = nodes.keySet();
+		Iterator<String> keyIter = keySet.iterator();
+		
+		while(keyIter.hasNext()) {
+			String key = keyIter.next();
+			Node val = nodes.get(key);
+			ElementData ed = (ElementData)val.getAttach();
+			System.out.println(key+" , "+val.getParent_identifier()+" , "+val.getLevel()+" , "+ed.getXpath());
+		}
+	}
+	
 	public void display(String identifier) {
 		this.display(identifier, ROOT);
 	}
@@ -77,7 +90,7 @@ public class Tree {
 		} else {
 			String tabs = String.format("%0" + depth + "d", 0).replace("0", "    "); // 4 spaces
 			ElementData ed = (ElementData)nodes.get(identifier).getAttach();
-			System.out.println(tabs + nodes.get(identifier).getIdentifier()+"=="+nodes.get(identifier).getLevel()+"=="+ed.getXpath()+"=="+ed.getUrl());
+			System.out.println(tabs + nodes.get(identifier).getIdentifier()+"=="+nodes.get(identifier).getLevel()+"=="+ed.getXpath()+"=="+ed.getUrl()+"=="+ed.isSameUrl());
 		}
 		depth++;
 		for (String child : children) {
