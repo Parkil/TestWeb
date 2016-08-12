@@ -59,6 +59,10 @@
 			logout-success-url="/login.do"
 			logout-url="/logout.do"
 		/>
+		
+		<session-management>
+			<concurrency-control max-sessions="1" error-if-maximum-exceeded="true"/>
+		</session-management>
 	</http>
 	
 	<authentication-manager>

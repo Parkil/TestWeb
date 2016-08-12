@@ -17,7 +17,6 @@ import org.springframework.util.Assert;
  * Spring Security 사용자 계정 관리 클래스
  */
 public class UserInfo implements UserDetails {
-
 	private static final long serialVersionUID = -6285503781877874478L;
 	
 	private String id;
@@ -116,5 +115,35 @@ public class UserInfo implements UserDetails {
 			
 			return o1.getAuthority().compareTo(o2.getAuthority());
 		}
+	}
+	
+	/*
+	 * 주의할점
+	 * context-security.xml에서 max-sessions를 정의해도 해당 클래스에서 hashCode,equals를 정의하지 않거나 제대로 정의하지 않으면
+	 * max-sessions 정책이 제대로 작동하지 않는다 
+	 */
+	@Override
+	public int hashCode() {
+		int result = 17;
+		result = 37 * result + id.hashCode();
+		result = 37 * result + pw.hashCode();
+		result = 37 * result + name.hashCode();
+		result = 37 * result + authorities.hashCode();
+		return result;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == this) {
+			return true;
+		}
+		
+		if(obj instanceof UserInfo == false) {
+			return false;
+		}
+		
+		UserInfo ui = (UserInfo)obj;
+		
+		return (this.id.equals(ui.getId())) && (this.pw.equals(ui.getPassword()));
 	}
 }
