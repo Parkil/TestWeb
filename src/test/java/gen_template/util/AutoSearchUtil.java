@@ -93,7 +93,7 @@ public class AutoSearchUtil {
 				String temp_xpath = ((ElementData)temp_node.getAttach()).getXpath();
 				List<WebElement> list = driver.findElements(By.xpath(temp_xpath));
 				
-				//해당 xpath가 존재하지 않을 경우(해당 node에 해당하는 페이지가 삭제되었거나 수정되어 찾을수 없는 경우)에는 해당  node자체를 continue처리
+				//해당 xpath가 존재하지 않을 경우(해당 node에 해당하는 페이지가 삭제되었거나 수정되어 찾을수 없는 경우)false를 반환
 				if(list.size() == 0) {
 					return false;
 				}else {

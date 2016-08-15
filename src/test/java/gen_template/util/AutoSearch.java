@@ -1,5 +1,6 @@
 package gen_template.util;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -78,56 +79,55 @@ public class AutoSearch {
 				//해당페이지의 a link를 검색,클릭하여 이동하는 URL을 Tree 하위 Level에 저장
 				List<WebElement> a_list = driver.findElements(search_tag);
 				
+				
+				//===============================================================여기 부터 수정영역
+				
+				List<ElementData> temp_list = new ArrayList<ElementData>();
 				int idx = 0;
+				
 				for(int i = 0,length = a_list.size() ; i < length ; i++) {
-					try {
-						el = a_list.get(i);
-						
-						//삭제대상 코드
-						if(el.getText().intern() == "로그아웃".intern() || el.getText().intern() == "history.back()".intern()) {
-							continue;
-						}
-					}catch(StaleElementReferenceException e) {
-						//여기서 가져온 a_list와 원래 a_list의 내용이 다를경우의 처리로직을 생각해 봐야 함
-						a_list = driver.findElements(search_tag);
-						el = a_list.get(i);
-					}catch(NoSuchElementException ne) {
-						System.out.println("해당 요소가 존재하지 않음");
-					}
+					el = a_list.get(i);
 					
-					ElementData el_data = new ElementData();
-					el_data.setXpath(AutoSearchUtil.getXpathStr(el));
-					
-					
-					//해당 xpath와 url이 동일한 경우 버튼을 클릭하지 않고 continue처리
-					String parent_identifier = node.getIdentifier();
-					if(xpath_list.contains(el_data.getXpath()+"======"+parent_current_url)) {
-						System.out.println("해당 xpath는 xpath_list에 존재함 : "+el_data.getXpath()+"======"+parent_current_url);
+					//일부버튼을 실행하지 않도록 처리(나중에는 설정으로 따로 빼도록 처리)
+					if(el.getText().intern() == "로그아웃".intern() || el.getText().intern() == "history.back()".intern()) {
 						continue;
 					}
 					
+					ElementData temp_el_data = new ElementData();
+					temp_el_data.setXpath(AutoSearchUtil.getXpathStr(el));
+					
+					//해당 xpath와 url이 동일한 경우 버튼을 클릭하지 않고 continue처리
+					if(xpath_list.contains(temp_el_data.getXpath()+"======"+parent_current_url)) {
+						System.out.println("해당 xpath는 xpath_list에 존재함 : "+temp_el_data.getXpath()+"======"+parent_current_url);
+						continue;
+					}
+					
+					String parent_identifier = node.getIdentifier();
+					tree.addNode(parent_identifier+"-"+level+"-"+(++idx), parent_identifier).setAttach(temp_el_data);
+					
+					temp_list.add(temp_el_data);
+				}
+				
+				for(ElementData e : temp_list) {
+					el = driver.findElement(By.xpath(e.getXpath()));
+					
 					el.click();
-					el_data.setAlertText(AutoSearchUtil.passAlertConfirm(driver));
+					e.setAlertText(AutoSearchUtil.passAlertConfirm(driver));
 					
 					wdw.until(ExpectedConditions.elementToBeClickable(By.tagName("body")));
 					
 					String child_current_url = driver.getCurrentUrl();
-					el_data.setUrl(child_current_url);
-					
-					
-					//현재 tree의 식별자가 동일하면 기존 값을 덮어씌우는 문제가 있음 이를 해결하기 위해서 식별자를 고유하게만들기 위해 앞에 부모의 식별자를 붙임
-					tree.addNode(parent_identifier+"-"+level+"-"+(++idx), parent_identifier).setAttach(el_data);
-					
+					e.setUrl(child_current_url);
 					
 					//부모 - 자식간 url이 동일함(검색 이나 외부 연동 또는 팝업처럼 페이지를 이동하지 않는 로직)
 					if(parent_current_url.indexOf(child_current_url) != -1 || child_current_url.indexOf(parent_current_url) != -1) {
-						el_data.setSameUrl(true);
+						e.setSameUrl(true);
 					}else { //부모 - 자식간 url이 동일하지 않음 - ElementData에 값을 입력하고 전  URL로 이동처리
 						if(level != 0) {
 							boolean result = AutoSearchUtil.navigateTargetUrl(to_root_list, driver, wdw);
 							
 							if(!result) {
-								xpath_list.add(el_data.getXpath()+"======"+parent_current_url);
+								xpath_list.add(e.getXpath()+"======"+parent_current_url);
 								continue node_list_for;
 							}
 						}else { //부모가  tree level 0인 경우
@@ -136,7 +136,7 @@ public class AutoSearch {
 						}
 					}
 					
-					xpath_list.add(el_data.getXpath()+"======"+parent_current_url);
+					xpath_list.add(e.getXpath()+"======"+parent_current_url);
 				}
 			}
 			
