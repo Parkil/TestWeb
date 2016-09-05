@@ -70,6 +70,17 @@
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
 	
+	<!--
+		spring security에서 session-management > concurrency-control을 사용하기 위해서 web.xml에서 지정해야함
+		이 listener를 선언하지 않으면 session이 invalidate되어도 SessionAuthenticationStrategy(세션 동시성 제어)에서 session이 expired되지 않은것으로 처리되어
+		로그아웃한 사용자가 로그인된 것으로 판단하는 문제가 있다.
+	-->
+	<listener>
+		<listener-class>
+			org.springframework.security.web.session.HttpSessionEventPublisher
+		</listener-class>
+	</listener>
+	
 	<!-- Servlet Context Config -->
 	<servlet>
 		<servlet-name>action</servlet-name>
