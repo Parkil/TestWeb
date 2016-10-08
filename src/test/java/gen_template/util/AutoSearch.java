@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -79,9 +77,19 @@ public class AutoSearch {
 				//해당페이지의 a link를 검색,클릭하여 이동하는 URL을 Tree 하위 Level에 저장
 				List<WebElement> a_list = driver.findElements(search_tag);
 				
+				/*
+				 * 현재 문제 
+				 * List,수정,삭제,reset으로 버튼이 구성되어 있는 경우 reset이 클릭될 시점에서는 이미 해당 건이 삭제되어 있는 상태이기 때문에 사실상 reset을 수행할수 없고 해당건이 
+				 * xpath_list에 저장이 되지 않기 때문에 다음 게시물검색시에 클릭이 되어 데이터가 저장되는 문제가 있음
+				 * 
+				 * 이를 해결하기 위해서는 다음게시물에서 검색되는 건을 최초건에서 입력하는 방식으로 중복제거 + 삭제 or 수정으로 클릭되지 않은건 처리를 동시에 수행할 필요가 있음.
+				 */
 				
-				//===============================================================여기 부터 수정영역
-				
+				/*
+				 * findElements로 얻어온 데이터를 바로 클릭하지 않고
+				 * (바로 클릭시 클릭하는 기능이 페이지를 이동 또는 refresh가 될경우 데이터를 새로 findElements로 갱신하지 않으면 staleElementException이 발생한다)
+				 * xpath_list에 존재하지 않는 데이터만 임시 List에 생성하고 임시 List에 들어있는 데이터를 클릭처리한다.
+				 */
 				List<ElementData> temp_list = new ArrayList<ElementData>();
 				int idx = 0;
 				
@@ -104,6 +112,8 @@ public class AutoSearch {
 					
 					String parent_identifier = node.getIdentifier();
 					tree.addNode(parent_identifier+"-"+level+"-"+(++idx), parent_identifier).setAttach(temp_el_data);
+					
+					System.out.println("입력된 xpath : "+temp_el_data.getXpath()+"======"+parent_current_url);
 					
 					temp_list.add(temp_el_data);
 				}
