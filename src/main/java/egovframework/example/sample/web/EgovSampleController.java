@@ -15,7 +15,9 @@
  */
 package egovframework.example.sample.web;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
@@ -30,12 +32,18 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springmodules.validation.commons.DefaultBeanValidator;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import com.fasterxml.jackson.databind.util.JSONWrappedObject;
+
 import egovframework.rte.fdl.property.EgovPropertyService;
 import egovframework.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
+import egovframework.example.requestmapping.SessionAttribute;
 import egovframework.example.sample.service.EgovSampleService;
 import egovframework.example.sample.service.SampleDefaultVO;
 import egovframework.example.sample.service.SampleVO;
@@ -82,7 +90,7 @@ public class EgovSampleController {
 	public String selectSampleList(
 			@ModelAttribute("searchVO") SampleDefaultVO searchVO, ModelMap model)
 			throws Exception {
-
+		
 		/** EgovPropertyService.sample */
 		searchVO.setPageUnit(propertiesService.getInt("pageUnit"));
 		searchVO.setPageSize(propertiesService.getInt("pageSize"));
@@ -279,5 +287,33 @@ public class EgovSampleController {
 	@RequestMapping("/login.do")
 	public String loginview() throws Exception {
 		return "/login/login";
+	}
+	
+	@RequestMapping(value="/sample/jsonptest.do")
+	@ResponseBody
+	public String jsonpTest() throws Exception {
+		Map<String,String> map = new HashMap<String,String>();
+		map.put("key1", "value1");
+		map.put("키2", "값2");
+		
+		ObjectMapper om = new ObjectMapper();
+		StringBuffer sb = new StringBuffer();
+		sb.append("callback(");
+		sb.append(om.writeValueAsString(map));
+		sb.append(")");
+		
+		System.out.println(sb.toString());
+		//return "1111";
+		return sb.toString();
+	}
+	
+	@RequestMapping(value="/sample/jsontest.do")
+	@ResponseBody
+	public String jsonTest() throws Exception {
+		Map<String,String> map = new HashMap<String,String>();
+		map.put("key1", "value1");
+		map.put("키2", "값2");
+		ObjectMapper om = new ObjectMapper();
+		return om.writeValueAsString(map);
 	}
 }

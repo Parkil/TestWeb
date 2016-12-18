@@ -63,7 +63,8 @@ if(principal != null && principal instanceof UserInfo){
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Basic Board List</title>
 <link type="text/css" rel="stylesheet" href="<c:url value='/css/egovframework/sample.css'/>"/>
-<script type="text/javaScript" language="javascript" defer="defer">
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script type="text/javascript">
 <!--
 /* 글 수정 화면 function */
 function fn_egov_select(id) {
@@ -90,7 +91,27 @@ function fn_egov_link_page(pageNo){
 	document.listForm.action = "<c:url value='/sample/egovSampleList.do'/>";
    	document.listForm.submit();
 }
-console.log(document.referrer)
+
+function aaa() {
+	$.ajax({
+		url: "/sample/jsonptest.do",
+		jsonpCallback : "callback",
+		dataType : "jsonp"
+	}).done(function(data) {
+		console.log(data);
+		console.log(data.key1);
+	});
+}
+
+function bbb() {
+	$.ajax({
+		url: "/sample/jsontest.do",
+		dataType : "json"
+	}).done(function(data) {
+		console.log(data);
+		console.log(data.key1);
+	});
+}
 -->
 </script>
 </head>
@@ -99,6 +120,9 @@ console.log(document.referrer)
 
 <!-- spring security를 이용한 로그아웃 수행 로그아웃시 spring security에서 지정한 세션정보+내가 입력한 세션정보가 같이 삭제된다.-->
 <a href="/logout.do">로그아웃</a> 
+<a href="javascript:history.go(-1)">history.back()</a>
+<a href="javascript:aaa()">jsonptest</a>
+<a href="javascript:bbb()">jsontest</a> 
 <br></br>
 <br></br>
 ${param}

@@ -27,12 +27,15 @@
 	xmlns:p="http://www.springframework.org/schema/p"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:util="http://www.springframework.org/schema/util"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
-						http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+						http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
 						http://www.springframework.org/schema/context
-						http://www.springframework.org/schema/context/spring-context-3.0.xsd
+						http://www.springframework.org/schema/context/spring-context-3.2.xsd
 						http://www.springframework.org/schema/mvc
-						http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+						http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+						http://www.springframework.org/schema/util
+						http://www.springframework.org/schema/util/spring-util-3.2.xsd
 						">
 	
 	<!-- - The controllers are autodetected POJOs labeled with the @Controller annotation. -->
@@ -55,11 +58,25 @@
 		<property name="webBindingInitializer">
 			<bean class="egovframework.example.cmmn.web.EgovBindingInitializer" />
 		</property>
+		
+		<!--
+			json반환시 한글이 깨지는 문제 수정처리
+			아래방법은 AnnotationMethodHandlerAdapter가 선언되어 있을 때 사용가능한 방법이며
+			spring 3.2부터는 AnnotationMethodHandlerAdapter가 deprecated 되었기 때문에 
+			아래 message Converter부분을 지정해야 함
+		-->
+		<property name="messageConverters">
+			<array>
+				<bean class = "org.springframework.http.converter.StringHttpMessageConverter">
+					<property name="supportedMediaTypes" value = "text/plain;charset=UTF-8" />
+				</bean>
+			</array>
+		</property>
 	</bean>
 	
-	<!-- @Valid 어노테이션을 사용하려면 보통 <mvc:annotation-driven/>을 선언하나 기존 설정과 충돌하여 사용하지 못할 경우에는 Validator만 따로 선언하여 webBindingInitializer에 지정한다. -->
+	<!-- @Valid 어노테이션을 사용하려면 보통 <mvc:annotation-driven/>을 선언하나 기존 설정과 충돌하여 사용하지 못할 경우에는 Validator만 따로 선언하여 webBindingInitializer에 지정한다.-->
 	<bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
-	
+	 
 	
 	<!-- Converter Config -->
 	
@@ -87,6 +104,28 @@
 	</bean>
 	
 	<!-- /Converter Config -->
+	
+	<!-- message Converter -->
+	
+	<!-- spring 3.1이상에서 사용하는 방법 
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<property name="messageConverters">
+			<util:list list-class="java.util.ArrayList">
+				<ref bean="mappingJackson2HttpMessageConverter"/>
+				<ref bean="stringhttp2"/>
+			</util:list>
+		</property>
+		</bean>
+		<bean id="mappingJackson2HttpMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+		<property name="supportedMediaTypes">
+			<list>
+				<value>text/html;charset=UTF-8</value>
+				<value>application/json;charset=UTF-8</value>
+			</list>
+		</property>
+		</bean>
+	-->
+	<!-- /message Converter -->
 
 	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
 
@@ -145,4 +184,6 @@
 		</mvc:interceptor>
 	</mvc:interceptors>
 	<!-- /Interceptor -->
+	
+	
 </beans>
