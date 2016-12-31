@@ -1,6 +1,8 @@
 package gen_template.util;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
@@ -105,5 +107,65 @@ public class AutoSearchUtil {
 		}
 		
 		return true;
+	}
+	
+	/**javascript 메소드의 유형 반환
+	 * @param method_str javascript 호출 문자열
+	 * @return
+	 */
+	public static String getMethodSignature(String method_str) {
+		if(method_str == null || method_str.intern() == "".intern()) {
+			return method_str;
+		}
+		
+		Pattern p = Pattern.compile("\\((.*)\\)");
+		Matcher m = p.matcher(method_str);
+		
+		StringBuffer sb = new StringBuffer();
+		sb.append("(");
+		if(m.find()) {
+			String param_str = m.group(1);
+			
+			if(param_str == null || param_str.intern() == "".intern()) {
+				return method_str;
+			}else {
+				String arr[] = param_str.split(",");
+				
+				String val = null;
+				for(int i = 0 ; i<arr.length ; i++) {
+					val = arr[i];
+					if(val.matches("'(.*)'")) { // '~'
+						sb.append("''");
+					}else if(val.matches("\"(.*)\"")) { //"~"
+						sb.append("\"\"");
+					}
+					
+					if(i != arr.length-1) {
+						sb.append(",");
+					}
+				}
+				sb.append(")");
+			}
+			
+			return method_str.replaceAll(p.toString(), sb.toString());
+		}else {
+			return method_str;
+		}
+	}
+	
+	/**리스트에 담긴 웹 요소가 전부 클릭되었는지 확인
+	 * @param temp_list
+	 * @return
+	 */
+	public static boolean isAllClicked(List<ElementData> temp_list) {
+		boolean isAllClicked = true;
+		
+		for(ElementData ed: temp_list) {
+			if(ed.getUrl() == null) {
+				isAllClicked = false;
+			}
+		}
+		
+		return isAllClicked;
 	}
 }
