@@ -1,11 +1,11 @@
 package gen_template.util;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -22,7 +22,7 @@ import gen_template.tree.Tree;
  * 
  * [구조]
  * 1.페이지로 이동하여 클릭가능한 요소를 검색한다.(현재는 a tag만 처리)
- * 2.클릭가능한 요소가 xpath_list에 저장된 요소일 경우에는 continue처리 (무한루프 방지)
+ * 2.클릭가능한 요소가 alreadyClickElementSet에 저장된 요소일 경우에는 continue처리 (무한루프 방지)
  * 3.1번에서 검색된 요소를 순차적으로 클릭한다.
  * 	3-1.클릭전 url과 클릭후 url이 동일한 경우 - tree에 동일 url flag를 달아서 저장
  *  3-2.클릭전 url과 클릭후 url이 다른경우 - 1번에서 지정된 페이지로 다시 이동 하고 tree에 해당 데이터를 저장한 다음 3번으로 이동
@@ -34,8 +34,9 @@ import gen_template.tree.Tree;
  * node의 최초 페이지로 이동후(최초 페이지는 링크가 없고 url로 이동) tree 하위 노드에 저장된 xpath를 클릭하는 방식으로 대상 페이지를 이동하도록 처리
  */
 public class AutoSearch {
-	private static Set<String> xpath_list = new HashSet<String>(); //xpath를 저장하는 리스트(중복제거를 위해 Set을사용)
-	private static Map<String,List<ElementData>> del_after_list = new HashMap<String,List<ElementData>>(); //삭제나 수정이 일어나서 더이상 탐색을 진행할수 없는 데이터를 저장 
+	//Multi-thread safe한 Collection사용
+	private static Set<String> alreadyClickElementSet = new ConcurrentSkipListSet<String>(); //클릭하여 Tree를 구성한 xpath를 저장(한번 클릭한 요소를 다시 클릭하는 케이스를 방지)
+	private static Map<String,List<ElementData>> cutOffMap = new ConcurrentHashMap<String,List<ElementData>>(); //클릭후 전 url로 돌아가지 못하는 웹 요소를 저장 (클릭한 요소가 삭제 or 수정)
 	
 	/** 인자로 주어진 요소를 클릭하고 정보를 Tree에 저장
 	 * @param search_tag 클릭하고자하는 요소를 지정한 By클래스
@@ -74,27 +75,28 @@ public class AutoSearch {
 					}
 				}
 				
+				/*
+				 * cufOffMap(검색 진행도중 삭제나 기타 이유로 진행을 할수 없는 url을 저장한 Map)을 검색하여 검색결과가 있으면 신규 검색을 하는것이 아니라 
+				 * cutOffMap에 있는 내용을 진행한다.(신규로 진행을 하면 alreadyClickElementSet에 진행하지 못한 요소가 신규 Node 밑에 붙기 때문에 이를 방지)
+				 */
 				String parent_current_url = driver.getCurrentUrl(); //검색대상 url
 				String parent_xpath = ((ElementData)node.getAttach()).getXpath(); //임시 xpath
 				
 				String del_chk_key = parent_current_url+"=="+AutoSearchUtil.getMethodSignature(parent_xpath);
 				
 				List<ElementData> temp_list = null;
-				if((temp_list = del_after_list.get(del_chk_key))!= null) {
+				if((temp_list = cutOffMap.get(del_chk_key))!= null) {
 					
 					//리스트에 들어있는 요소를 모두 클릭했으면리스트에서 삭제처리
 					if(AutoSearchUtil.isAllClicked(temp_list)) {
-						del_after_list.remove(del_chk_key);
+						cutOffMap.remove(del_chk_key);
 					}
-				}
-				
-				
-				/*
-				 * findElements로 얻어온 데이터를 바로 클릭하지 않고
-				 * (바로 클릭시 클릭하는 기능이 페이지를 이동 또는 refresh가 될경우 데이터를 새로 findElements로 갱신하지 않으면 staleElementException이 발생한다)
-				 * xpath_list에 존재하지 않는 데이터만 임시 List에 생성하고 임시 List에 들어있는 데이터를 클릭처리한다.
-				 */
-				if(temp_list == null || temp_list.size() == 0) { //del_after_list체크시 해당key로 리스트가 검색되지 않을때에는 신규로 리스트 작성
+				}else {
+					/*
+					 * findElements로 얻어온 데이터를 바로 클릭하지 않고
+					 * (바로 클릭시 클릭하는 기능이 페이지를 이동 또는 refresh가 될경우 데이터를 새로 findElements로 갱신하지 않으면 staleElementException이 발생한다)
+					 * xpath_list에 존재하지 않는 데이터만 임시 List에 생성하고 임시 List에 들어있는 데이터를 클릭처리한다.
+					 */
 					List<WebElement> a_list = driver.findElements(search_tag); //해당페이지의 a link를 검색
 					temp_list = new ArrayList<ElementData>();
 					int idx = 0;
@@ -111,8 +113,7 @@ public class AutoSearch {
 						temp_el_data.setXpath(AutoSearchUtil.getXpathStr(el));
 						
 						//해당 xpath와 url이 동일한 경우 버튼을 클릭하지 않고 continue처리
-						if(xpath_list.contains(temp_el_data.getXpath()+"======"+parent_current_url)) {
-							//System.out.println("해당 xpath는 xpath_list에 존재함 : "+temp_el_data.getXpath()+"======"+parent_current_url);
+						if(alreadyClickElementSet.contains(temp_el_data.getXpath()+"======"+parent_current_url)) {
 							continue;
 						}
 						
@@ -122,6 +123,7 @@ public class AutoSearch {
 						temp_list.add(temp_el_data);
 					}
 				}
+				
 				
 				for(ElementData e : temp_list) {
 					if(e.getUrl() != null) { //url이 있다는것은 이미 클릭을 한 웹 요소이므로 continue처리함
@@ -147,9 +149,8 @@ public class AutoSearch {
 							
 							//전 url로 이동할수 없는 경우 - 해당 데이터가 삭제되거나 수정되어 찾아갈수 없는 경우
 							if(!result) {
-								xpath_list.add(e.getXpath()+"======"+parent_current_url);
-								del_after_list.put(del_chk_key, temp_list);
-								//현재노드 +1 ~ temp_list 끝까지의 데이터를 저장해야 함
+								alreadyClickElementSet.add(e.getXpath()+"======"+parent_current_url);
+								cutOffMap.put(del_chk_key, temp_list);
 								continue node_list_for;
 							}
 						}else { //부모가  tree level 0인 경우
@@ -158,7 +159,7 @@ public class AutoSearch {
 						}
 					}
 					
-					xpath_list.add(e.getXpath()+"======"+parent_current_url);
+					alreadyClickElementSet.add(e.getXpath()+"======"+parent_current_url);
 				}
 				
 				temp_list = null; //초기화
