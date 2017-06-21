@@ -1,0 +1,182 @@
+package gen_template;
+
+
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.NoAlertPresentException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import gen_template.tree.Tree;
+import gen_template.util.AutoSearch;
+import util.Util;
+
+/*
+ * Selnium Template Generator 개발 테스트 케이스
+ */
+public class TemplateDevTestCase {
+	private static WebDriver driver;
+	private static JavascriptExecutor je;
+	
+	@BeforeClass
+	public static void setUpBeforeClass() throws Exception {
+		driver = Util.getChromeDriver();
+		//driver = Util.getIEDriver();
+		je = (JavascriptExecutor)driver;
+	}
+
+	@AfterClass
+	public static void tearDownAfterClass() throws Exception {
+		driver.close();
+	}
+
+	@Before
+	public void setUp() throws Exception {
+	}
+
+	@After
+	public void tearDown() throws Exception {
+	}
+	
+	public static String getXpathStr(WebElement el) {
+		String tag_name = el.getTagName();
+		String xpath_format = "//%1$s[@%2$s=\"%3$s\"]";
+		
+		/*
+		 * a tag의 href에 #을 넣고 onclick 항목에 자바스크립트 코드를 넣는 경우 getAttribute("href")가 #으로 나오는 것이 아닌
+		 * url주소/# 로 표시가 되기 때문에 onclick을 가장먼저 검색하도록 처리
+		 */
+		String[] attr_arr = {"onclick", "id", "name", "href"};
+		
+		String attr = null;
+		String sel_attr = null;
+		
+		for(String val : attr_arr) {
+			attr = el.getAttribute(val);
+			if(attr != null && attr.trim().intern() != "".intern()) {
+				sel_attr = val;
+				break;
+			}
+		}
+		
+		return String.format(xpath_format, tag_name, sel_attr, attr);
+	}
+	
+	/**
+	 * 로그인
+	 */
+	@Test
+	public void test() {
+		
+		driver.get("http://localhost:8080");
+		
+		/**/
+		WebElement id = driver.findElement(By.cssSelector("#id"));
+		WebElement pw = driver.findElement(By.cssSelector("#pw"));
+		WebElement submit = driver.findElement(By.cssSelector("input[type='submit']"));
+		
+		id.sendKeys("user");
+		pw.sendKeys("user");
+		submit.click();
+		
+		WebDriverWait wdw = new WebDriverWait(driver,10);
+		wdw.until(ExpectedConditions.titleContains("List"));
+		
+		/*
+		List<WebElement> list = driver.findElements(By.cssSelector("a,input[name='submit'],input[type='button'],input[type='image']"));
+		for(WebElement el : list) {
+			//getAttribute는 대소문자 구분을 가리지 않음.(해당 tag의 name 속성이 Name 이나 nAme으로 되어도 정상적으로 검출함
+			System.out.println(el.getTagName()+"=="+el.getAttribute("id")+"=="+el.getAttribute("name")+"=="+el.getAttribute("type")+"=="+el.getAttribute("href")+"=="+el.getAttribute("onclick"));
+			System.out.println(getXpathStr(el));
+		}
+		
+		//WebElement test = driver.findElement(By.xpath("//input[@onclick=\"javascript:alert('sdafdsafasd')\"]"));
+		//System.out.println(test.getTagName()+"=="+test.getAttribute("id")+"=="+test.getAttribute("name")+"=="+test.getAttribute("type"));
+		*/
+	}
+
+	@Test
+	public void test1() throws Exception{
+		By css_selector = By.cssSelector("a,input[name='submit'],input[type='button'],input[type='image']");
+		
+		//root-node를 수동으로 입력
+		ElementData el_data = new ElementData();
+		el_data.setUrl(driver.getCurrentUrl());
+		Tree tree = new Tree();
+		tree.addNode("root-node").setAttach(el_data);
+		
+		AutoSearch.searchClickableElement(css_selector, tree, driver);
+	}
+	
+	//@Test
+	//다중 alert 처리 테스트
+	public void test2() {
+		String parent = driver.getWindowHandle();
+		System.out.println("Handle1 : "+parent);
+		
+		WebElement test = driver.findElement(By.cssSelector("a[id=aaa1s]"));
+		test.click();
+		
+		try {
+			/*
+			 * 한 기능(버튼클릭)시 10개 정도의 팝업을 띄우는 케이스는 없다고 가정하고 처리
+			 */
+			for(int i = 0 ; i<10 ; i++) {
+				Alert alert = driver.switchTo().alert();
+				System.out.println("For Handle : "+driver.getWindowHandle());
+				alert.accept();
+				driver.switchTo().window(parent); //alert을 닫은후 포커스를 다시 부모창으로 이동해야 다음 alert을 처리할수 있음.
+			}
+		}catch(NoAlertPresentException nape) {
+			System.out.println("No Alert Presented");
+		}finally {
+			driver.switchTo().window(parent);
+		}
+		
+		driver.switchTo().window(parent); //alert창으로 포커스를 옮겨서 테스트를 진행한 후에 다음테스트를 진행하기 위해서 포커스를 다시 부모창으로 이동
+		
+		WebDriverWait wdw = new WebDriverWait(driver, 10);
+		wdw.until(ExpectedConditions.elementToBeClickable(By.tagName("body")));
+		
+		WebElement test2 = driver.findElement(By.xpath("//a[@href=\"/logout.do\"]"));
+		test2.click();
+	}
+	
+	//@Test
+	//Confirm관련 테스트
+	public void test3() {
+		try {
+			String parent = driver.getWindowHandle();
+			System.out.println("prev : "+parent);
+			
+			WebElement test = driver.findElement(By.cssSelector("input[id=test2]"));
+			test.click();
+			
+			Alert a = driver.switchTo().alert();
+			
+			a.accept(); //OK버튼 클릭
+			//a.dismiss(); //cancel버튼 클릭 
+			
+			System.out.println(driver.getWindowHandle());
+			
+			driver.switchTo().window(parent); //alert창으로 포커스를 옮겨서 테스트를 진행한 후에 다음테스트를 진행하기 위해서 포커스를 다시 부모창으로 이동
+			
+			WebElement test2 = driver.findElement(By.xpath("//a[@href=\"/logout.do\"]"));
+			test2.click();
+		}catch(NoAlertPresentException e) {
+			e.printStackTrace();
+		}
+	}
+}
