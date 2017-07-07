@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -43,7 +44,6 @@ import com.fasterxml.jackson.databind.util.JSONWrappedObject;
 
 import egovframework.rte.fdl.property.EgovPropertyService;
 import egovframework.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
-import egovframework.example.requestmapping.SessionAttribute;
 import egovframework.example.sample.service.EgovSampleService;
 import egovframework.example.sample.service.SampleDefaultVO;
 import egovframework.example.sample.service.SampleVO;
@@ -61,7 +61,13 @@ import egovframework.example.sample.service.SampleVO;
  */
 
 @Controller
-@SessionAttributes(types = SampleVO.class)
+/*
+ * 대상으로 지정한 파라메터를 세션에 sessionStatus.setComplete()가 호출될때까지 저장한다.
+ * 저장하는 대상
+ * model.addAttribute("sampleVO", new SampleVO());
+ * @ModelAttribute
+ */
+@SessionAttributes(value={"sampleVO"})
 public class EgovSampleController {
 
 	/** EgovSampleService */
@@ -167,11 +173,16 @@ public class EgovSampleController {
 	public String addSample(
 			@ModelAttribute("searchVO") SampleDefaultVO searchVO,
 			@Valid SampleVO sampleVO, BindingResult bindingResult, Model model,
+			HttpServletRequest request,
 			SessionStatus status)
 			throws Exception {
 		
-		System.out.println("----"+ToStringBuilder.reflectionToString(sampleVO));
-		System.out.println(ToStringBuilder.reflectionToString(sampleVO.getFilevo()));
+		System.out.println(request.getSession().getAttribute("sampleVO"));
+		System.out.println("=======================================================>");
+		System.out.println(request.toString());
+		Thread.sleep(1000 * 30);
+		//System.out.println("----"+ToStringBuilder.reflectionToString(sampleVO));
+		//System.out.println(ToStringBuilder.reflectionToString(sampleVO.getFilevo()));
 		//sampleVO.getFilevo().transferFile("c:/web-down");
 		
 		/*
@@ -204,6 +215,7 @@ public class EgovSampleController {
 
 		sampleService.insertSample(sampleVO);
 		status.setComplete();
+		System.out.println("=================================>"+request.toString()+" insert complete");
 		return "forward:/sample/egovSampleList.do";
 	}
 
