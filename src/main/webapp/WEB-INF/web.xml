@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app id="WebApp_ID" version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+
+<!--
+	servlet 3.0이상부터 web-app에 metadata-complete를 설정할수 있다.
+	metadata-complete = "true"인 경우 ServletContainerInitializer 나 web-fragment.xml을 검색하지 않아서 시작속도가 빨라 질수 있다.
+	단 ServletContainerInitializer나 web-fragment.xml을 사용할 경우에는 추가하지 말것
+	
+	web-fragment.xml : servlet 3.0이상 부터 추가된 개념으로 라이브러리 jar파일의 META-INF안에 존재하며 jar파일 로드시 web.xml과 동일하게 작동한다
+	단 위의 metadata-complete = "true" 설정시 작동하지 않는다.
+-->
+<web-app id="WebApp_ID" version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_3_0.xsd" metadata-complete="true">
 	<display-name>TestWeb.TestWeb</display-name>
 	<filter>
 		<filter-name>encodingFilter</filter-name>
@@ -10,13 +19,22 @@
 			<param-name>encoding</param-name>
 			<param-value>utf-8</param-value>
 		</init-param>
-	</filter>    
+	</filter>
+	
 	<filter>
 		<filter-name>HTMLTagFilter</filter-name>
 		<filter-class>
 			egovframework.rte.ptl.mvc.filter.HTMLTagFilter
 		</filter-class>
 	</filter>
+	
+	<filter>
+		<filter-name>TestFilter</filter-name>
+		<filter-class>
+			egovframework.filter.TestFilter
+		</filter-class>
+	</filter>
+	
 	<filter-mapping>
 		<filter-name>encodingFilter</filter-name>
 		<url-pattern>*.do</url-pattern>
@@ -24,7 +42,11 @@
 	<filter-mapping>
 		<filter-name>HTMLTagFilter</filter-name>
 		<url-pattern>*.do</url-pattern>
-	</filter-mapping>	
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>TestFilter</filter-name>
+		<url-pattern>*.do</url-pattern>
+	</filter-mapping>
 	
 	<!-- spring security 필터 설정 대상지정시 spring security내부에서 *.do가 아닌 기능을 사용하기 때문에 /*이 아닌 .do를 지정하면 안됨  -->
 	<filter>
@@ -75,6 +97,7 @@
 		이 listener를 선언하지 않으면 session이 invalidate되어도 SessionAuthenticationStrategy(세션 동시성 제어)에서 session이 expired되지 않은것으로 처리되어
 		로그아웃한 사용자가 로그인된 것으로 판단하는 문제가 있다.
 	-->
+	<!--  -->
 	<listener>
 		<listener-class>
 			org.springframework.security.web.session.HttpSessionEventPublisher
