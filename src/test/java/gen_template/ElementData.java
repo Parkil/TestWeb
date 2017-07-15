@@ -1,6 +1,11 @@
 package gen_template;
 
-public class ElementData {
+import java.io.Serializable;
+
+public class ElementData implements Serializable{
+	
+	private static final long serialVersionUID = -1263810364771199995L;
+	
 	private String xpath; //By xpath문자열
 	private String url; //url정보
 	private String alertText; //해당 요소를 클릭했을때 발생하는 alert문구(없을수도 있음)

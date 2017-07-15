@@ -1,12 +1,15 @@
 package gen_template.tree;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /*
  * tree node
  */
-public class Node implements Comparable<Node>{
+public class Node implements Comparable<Node>,Serializable{
 
+	private static final long serialVersionUID = -63390432191047878L;
+	
 	private String identifier; //식별자
 	private String parent_identifier; //부모식별자
 	private int level ; //level

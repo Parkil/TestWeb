@@ -1,5 +1,6 @@
 package gen_template.tree;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -10,7 +11,9 @@ import java.util.Set;
 
 import gen_template.ElementData;
 
-public class Tree {
+public class Tree implements Serializable{
+
+	private static final long serialVersionUID = 223115947021113469L;
 
 	private final static int ROOT = 0;
 

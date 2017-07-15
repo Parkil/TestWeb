@@ -166,10 +166,13 @@ public class AutoSearch {
 			}
 			
 			tree.display("root-node");
-			System.out.println("\n\n");
 	
 			level++;
 		}
+		
+		//템플릿 소스코드 생성을 위해서 직렬화-파일저장을 시키는 로직
+		//SerializationTest serial = new SerializationTest();
+		//serial.save(tree);
 		
 		return tree;
 	}
