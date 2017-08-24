@@ -233,7 +233,7 @@ public class AutoSearchUtil {
 				
 				String signature = AutoSearchUtil.getJavaScriptMethodSignature(child_el.getXpath());
 				
-				if(signature_set.contains(signature)) {
+				if(signature_set.contains(signature)) { //동일한 mehtod signature가 존재할경우 pass처리
 					continue;
 				}
 				

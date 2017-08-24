@@ -39,7 +39,7 @@ public class TemplateDevTestCase {
 
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
-		driver.close();
+		//driver.close();
 	}
 
 	@Before
@@ -118,6 +118,15 @@ public class TemplateDevTestCase {
 		tree.addNode("root-node").setAttach(el_data);
 		
 		AutoSearch.searchClickableElement(css_selector, tree, driver);
+	}
+	
+	//@Test
+	//자동 진행에서 생성된 pageobject소스 검증 테스트
+	public void test4() throws Exception{
+		root_node test = new root_node(driver);
+		
+		Object[] t = new Object[1];
+		test.exec(t);
 	}
 	
 	//@Test

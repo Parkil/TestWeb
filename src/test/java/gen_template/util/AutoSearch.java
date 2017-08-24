@@ -170,6 +170,14 @@ public class AutoSearch {
 			level++;
 		}
 		
+		/* 검색된 Tree구조 데이터를 이용하여 pageobject소스생성*/
+		try {
+			new AutoSearchUtil().generateCodeByTree("root-node", tree);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		//템플릿 소스코드 생성을 위해서 직렬화-파일저장을 시키는 로직
 		//SerializationTest serial = new SerializationTest();
 		//serial.save(tree);
