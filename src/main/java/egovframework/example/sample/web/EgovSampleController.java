@@ -15,15 +15,16 @@
  */
 package egovframework.example.sample.web;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -31,22 +32,24 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.servlet.ModelAndView;
 import org.springmodules.validation.commons.DefaultBeanValidator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.JSONPObject;
-import com.fasterxml.jackson.databind.util.JSONWrappedObject;
 
 import egovframework.rte.fdl.property.EgovPropertyService;
 import egovframework.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
 import egovframework.example.sample.service.EgovSampleService;
 import egovframework.example.sample.service.SampleDefaultVO;
 import egovframework.example.sample.service.SampleVO;
+import egovframework.example.sample.service.TestVO;
 
 /**
  * @Class Name : EgovSampleController.java
@@ -94,8 +97,13 @@ public class EgovSampleController {
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/sample/egovSampleList.do")
 	public String selectSampleList(
-			@ModelAttribute("searchVO") SampleDefaultVO searchVO, ModelMap model)
+			@ModelAttribute("searchVO") SampleDefaultVO searchVO,
+			ModelMap model,
+			@RequestHeader Map<String,Object> header_map)
 			throws Exception {
+		
+		System.out.println("========================>");
+		System.out.println(header_map);
 		
 		/** EgovPropertyService.sample */
 		searchVO.setPageUnit(propertiesService.getInt("pageUnit"));
@@ -176,11 +184,11 @@ public class EgovSampleController {
 			HttpServletRequest request,
 			SessionStatus status)
 			throws Exception {
-		
+	
 		System.out.println(request.getSession().getAttribute("sampleVO"));
 		System.out.println("=======================================================>");
 		System.out.println(request.toString());
-		Thread.sleep(1000 * 30);
+		//Thread.sleep(1000 * 30);
 		//System.out.println("----"+ToStringBuilder.reflectionToString(sampleVO));
 		//System.out.println(ToStringBuilder.reflectionToString(sampleVO.getFilevo()));
 		//sampleVO.getFilevo().transferFile("c:/web-down");
@@ -327,5 +335,37 @@ public class EgovSampleController {
 		map.put("키2", "값2");
 		ObjectMapper om = new ObjectMapper();
 		return om.writeValueAsString(map);
+	}
+	
+	/*
+	 * @ModelAttribute를 지정하지 않아도 vo와 동일한 이름의 파라메터가 존재하면 자동으로 binding된다.
+	 * VO에 Map이나 List가 존재하면 파라메터 명으로 바로 binding을 시킬수 있다.
+	 * 
+	 * List - {파라메터명}[Collection index]=value
+	 * ex) 파라메터가 list1이라는 이름의 List<String>일때
+	 * http://localhost:8080/test.do?list1[0]=1 - list의 첫번째 값을 1로 설정
+	 * http://localhost:8080/test.do?list1[3]=1 - list의 세번째 값을 1로 설정(첫번째,두번째 값은 null로 지정)
+	 * 
+	 * Map - {파라메터명}[key]=value
+	 * http://localhost:8080/test.do?map1['b']=b - map에 b라는 key의 값을 b로 지정
+	 */
+	@RequestMapping("/test.do")
+	public List<String> test(
+			TestVO vo,
+			HttpServletRequest req,
+			HttpServletResponse resp) throws Exception {
+		System.out.println("=======================>");
+		System.out.println("=======================>");
+		System.out.println(vo);
+		System.out.println(vo.getList1());
+		System.out.println(vo.getMap1());
+		//ModelAndView mav = new ModelAndView();
+		//return mav;
+		
+		ArrayList<String> a = new ArrayList<String>();
+		a.add("a");
+		a.add("b");
+		a.add("c");
+		return a;
 	}
 }
