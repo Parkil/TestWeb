@@ -21,9 +21,13 @@ public class LoginPage_Loadable extends LoadableComponent<LoginPage_Loadable>{
 	@FindBy(id = "pw")
 	private WebElement pw;
 	private WebElement submit;
+	
+	@FindBy(xpath = "//a[@onclick=\"javascript:alert('test12345')\"]")
+	private WebElement test;
+	
 	private WebDriver driver;
 	
-	private String url = "http://localhost:10010";
+	private String url = "http://localhost:8080";
 	
 	public LoginPage_Loadable(WebDriver driver) {
 		this.driver = driver;
@@ -52,7 +56,7 @@ public class LoginPage_Loadable extends LoadableComponent<LoginPage_Loadable>{
 		
 		id.sendKeys(web_id);
 		pw.sendKeys(web_pw);
-		
+		test.click();
 		submit.click();
 	}
 }

@@ -9,7 +9,7 @@
 						http://www.springframework.org/schema/security
 						http://www.springframework.org/schema/security/spring-security-3.2.xsd
 						">
-
+						
 	<http pattern="/**/*.js" security="none"/>
 	<http pattern="/**/*.css" security="none"/>
 	<http pattern="/images/*" security="none"/>
@@ -61,7 +61,7 @@
 		/>
 		
 		<session-management>
-			<concurrency-control max-sessions="1" error-if-maximum-exceeded="true"/>
+			<concurrency-control max-sessions="1" error-if-maximum-exceeded="false"/>
 		</session-management>
 	</http>
 	

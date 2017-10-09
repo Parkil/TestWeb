@@ -39,7 +39,8 @@ import org.springframework.web.context.request.WebRequest;
  * @version 1.0
  * @see Copyright (C) by MOPAS All right reserved.
  */
-public class EgovBindingInitializer implements WebBindingInitializer {
+//public class EgovBindingInitializer implements WebBindingInitializer {
+public class EgovBindingInitializer extends org.springframework.web.bind.support.ConfigurableWebBindingInitializer{
 	
 	@Autowired
 	private ConversionService conversionService; //converter 서비스(dispatcher-servlet.xml 에서 id를 conversionService로 지정한 bean을 Autowired를 이용하여 자동으로 DI처리)
@@ -54,6 +55,7 @@ public class EgovBindingInitializer implements WebBindingInitializer {
 	 * @see 개발프레임웍크 실행환경 개발팀
 	 */
 	public void initBinder(WebDataBinder binder, WebRequest request) {
+		System.out.println("=====================>전역 custom binder 실행");
 		//property-editor를 이용하여 binding되는 파라메터를 조작
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		dateFormat.setLenient(false);
@@ -64,5 +66,4 @@ public class EgovBindingInitializer implements WebBindingInitializer {
 		binder.setConversionService(conversionService);
 		binder.setValidator(validator);
 	}
-
 }

@@ -23,6 +23,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.springframework.stereotype.Controller;
@@ -31,6 +32,8 @@ import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -70,7 +73,7 @@ import egovframework.example.sample.service.TestVO;
  * model.addAttribute("sampleVO", new SampleVO());
  * @ModelAttribute
  */
-@SessionAttributes(value={"sampleVO"})
+@SessionAttributes("sessionVO")
 public class EgovSampleController {
 
 	/** EgovSampleService */
@@ -104,6 +107,8 @@ public class EgovSampleController {
 		
 		System.out.println("========================>");
 		System.out.println(header_map);
+		
+		model.addAttribute("sessionVO",searchVO);
 		
 		/** EgovPropertyService.sample */
 		searchVO.setPageUnit(propertiesService.getInt("pageUnit"));
@@ -145,6 +150,7 @@ public class EgovSampleController {
 	SampleVO selectSample(SampleVO sampleVO,
 			@ModelAttribute("searchVO") SampleDefaultVO searchVO)
 			throws Exception {
+		
 		return sampleService.selectSample(sampleVO);
 	}
 
@@ -159,8 +165,11 @@ public class EgovSampleController {
 	 */
 	@RequestMapping("/sample/addSampleView.do")
 	public String addSampleView(
-			@ModelAttribute("searchVO") SampleDefaultVO searchVO, Model model)
+			@ModelAttribute("searchVO") SampleDefaultVO searchVO, Model model, HttpSession session, @ModelAttribute("sessionVO") SampleDefaultVO sessionVO)
 			throws Exception {
+		System.out.println("------------------->@SessionAttribute");
+		System.out.println(sessionVO);
+		
 		model.addAttribute("sampleVO", new SampleVO());
 		return "/sample/egovSampleRegister";
 	}
@@ -348,10 +357,12 @@ public class EgovSampleController {
 	 * 
 	 * Map - {파라메터명}[key]=value
 	 * http://localhost:8080/test.do?map1['b']=b - map에 b라는 key의 값을 b로 지정
+	 * 
+	 * List나 Map의 경우 VO에서 굳이 초기화를 하지 않아도 정상적으로 작동한다.
 	 */
 	@RequestMapping("/test.do")
 	public List<String> test(
-			TestVO vo,
+			@ModelAttribute("TestVO")TestVO vo,
 			HttpServletRequest req,
 			HttpServletResponse resp) throws Exception {
 		System.out.println("=======================>");
@@ -367,5 +378,20 @@ public class EgovSampleController {
 		a.add("b");
 		a.add("c");
 		return a;
+	}
+	
+	/*
+	 * method에 ModelAttribute를 설정시 해당 Controller에서 반환하는 View에서는 해당데이터를 가져다 쓸 수 있다.
+	 */
+
+	@ModelAttribute("testddd")
+	public String sss() {
+		return "sssssss123456";
+	}
+	
+	@InitBinder
+	public void initBinder(WebDataBinder binder) {
+		System.out.println("================>Controller 별 binder");
+		binder.setDisallowedFields("id");
 	}
 }

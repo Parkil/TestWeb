@@ -30,9 +30,14 @@
 <!--For Commons Validator Client Side-->
 <script type="text/javascript" src="<c:url value='/cmmn/validator.do'/>"></script>
 <validator:javascript formName="sampleVO" staticJavascript="false" xhtml="true" cdata="false"/>
-
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 <script type="text/javaScript" language="javascript" defer="defer">
-<!--
+$(document).ready(function() {
+	$("#list_btn").click(function() {
+		fn_egov_selectList();
+	});
+});
+<!---->
 /* 글 목록 화면 function */
 function fn_egov_selectList() {
    	document.detailForm.action = "<c:url value='/sample/egovSampleList.do'/>";
@@ -47,6 +52,7 @@ function fn_egov_delete() {
 
 /* 글 등록 function */
 function fn_egov_save() {	
+	
 	frm = document.detailForm;
 	if(!validateSampleVO(frm)){
         return;
@@ -54,14 +60,55 @@ function fn_egov_save() {
     	frm.action = "<c:url value="${registerFlag == '등록' ? '/sample/addSample.do' : '/sample/updateSample.do'}"/>";
         frm.submit();
     }
+	
+	// ajaxSubmit Option 
+	/*
+    options = {
+        beforeSubmit : applyBefore, // ajaxSubmit 전처리 함수
+        success      : applyAfter,  // ajaxSubmit 후처리 함수
+        dataType     : 'json',       // 데이터 타입 json
+        error : test
+    };
+    // frmApply Form Data값을 testAjax.html 으로 ajax 전송
+    $("#detailForm").ajaxSubmit(options);
+	 */
+   
 }
--->
+
+function test(a,b,c) {
+	console.log(a,b,c);
+}
+
+function applyBefore(formData, jqForm, options)
+{        
+   
+    // ajaxSubmit 전 처리 작업 영역
+ 
+    return true;
+}
+ 
+function applyAfter(objResponse, statusText, xhr, $form)
+{
+    alert('111')
+	if (statusText == "success") {
+        // ajax 통신 성공 후 처리영역
+        if (objResponse.strResult == "SUCCESS" ) {
+            // 리턴받은 json 배열의 strResult 값이 "SUCCESS"일 경우 처리영역
+        } else {
+            // SUCCESS 이외의 값으로 리턴됐을 경우 처리영역
+        }
+    } else {
+        // ajax 통신 실패 처리영역
+    }    
+}
+ 
+
 </script>
 </head>
 
 <body style="text-align:center; margin:0 auto; display:inline; padding-top:100px;">
 
-<form:form commandName="sampleVO" name="detailForm" method="post" enctype="multipart/form-data">
+<form:form commandName="sampleVO" name="detailForm" id="detailForm" method="post" enctype="multipart/form-data">
 <input type="hidden" name="test" value="${param.selectedId}"/>
 <div id="content_pop">
 	<!-- 타이틀 -->
@@ -127,13 +174,26 @@ function fn_egov_save() {
 	</table>
   </div>
 	<div id="sysbtn">
+		<%-- 
 		<ul>
 			<li><span class="btn_blue_l"><a href="javascript:fn_egov_selectList();">List</a><img src="<c:url value='/images/egovframework/example/btn_bg_r.gif'/>" style="margin-left:6px;"></span></li>
 			<li><span class="btn_blue_l"><a href="javascript:fn_egov_save();"><c:out value='${registerFlag}'/></a><img src="<c:url value='/images/egovframework/example/btn_bg_r.gif'/>" style="margin-left:6px;"></span></li>
 			<c:if test="${registerFlag == '수정'}">
 			<li><span class="btn_blue_l"><a href="javascript:fn_egov_delete();">삭제</a><img src="<c:url value='/images/egovframework/example/btn_bg_r.gif'/>" style="margin-left:6px;"></span></li>
 			</c:if>
-			<li><span class="btn_blue_l"><a href="javascript:document.detailForm.reset();">Reset</a><img src="<c:url value='/images/egovframework/example/btn_bg_r.gif'/>" style="margin-left:6px;"></span></li></ul>
+			<li><span class="btn_blue_l"><a href="javascript:document.detailForm.reset();">Reset</a><img src="<c:url value='/images/egovframework/example/btn_bg_r.gif'/>" style="margin-left:6px;"></span></li>
+		</ul>
+		--%>
+		<ul>
+			<li><span class="btn_blue_l"><a href="#" id="list_btn">List</a><img src="<c:url value='/images/egovframework/example/btn_bg_r.gif'/>" style="margin-left:6px;"></span></li>
+			<li><span class="btn_blue_l"><a href="#" onclick="javascript:fn_egov_save();"><c:out value='${registerFlag}'/></a><img src="<c:url value='/images/egovframework/example/btn_bg_r.gif'/>" style="margin-left:6px;"></span></li>
+			<c:if test="${registerFlag == '수정'}">
+			<li>
+				<input type="button" name="del_btn" value="삭제" onclick="javascript:fn_egov_delete();"/>
+			</li>
+			</c:if>
+			<li><span class="btn_blue_l"><a href="javascript:document.detailForm.reset();">Reset</a><img src="<c:url value='/images/egovframework/example/btn_bg_r.gif'/>" style="margin-left:6px;"></span></li>
+		</ul>
 	</div>
 </div>
 <!-- 검색조건 유지 -->

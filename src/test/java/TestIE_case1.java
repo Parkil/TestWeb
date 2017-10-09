@@ -384,6 +384,6 @@ public class TestIE_case1 {
 	//window process kill test(여러개의 동일한 프로세스가 떠 있는 경우 떠 있는 모든 프로세스를 kill한다.)
 	@Test
 	public void submit_after_test993() {
-		WindowsUtils.tryToKillByName("IEDriverServer.exe");
+		WindowsUtils.killByName("IEDriverServer.exe");
 	}
 }

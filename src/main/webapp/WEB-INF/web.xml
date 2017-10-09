@@ -8,7 +8,7 @@
 	web-fragment.xml : servlet 3.0이상 부터 추가된 개념으로 라이브러리 jar파일의 META-INF안에 존재하며 jar파일 로드시 web.xml과 동일하게 작동한다
 	단 위의 metadata-complete = "true" 설정시 작동하지 않는다.
 -->
-<web-app id="WebApp_ID" version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_3_0.xsd" metadata-complete="true">
+<web-app id="WebApp_ID" version="3.0" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" metadata-complete="true">
 	<display-name>TestWeb.TestWeb</display-name>
 	<filter>
 		<filter-name>encodingFilter</filter-name>
@@ -104,7 +104,10 @@
 		</listener-class>
 	</listener>
 	
-	<!-- Servlet Context Config -->
+	<!--
+		Servlet Context Config
+		contextConfigLocation을 미지정시 WEB-INF/[context명]-servlet.xml을 로딩한다.
+	-->
 	<servlet>
 		<servlet-name>action</servlet-name>
 		<servlet-class>
@@ -131,6 +134,7 @@
 		<auth-method>BASIC</auth-method>
 	</login-config>
 	
+	<!-- 
 	<error-page>
 		<exception-type>java.lang.Throwable</exception-type>
 		<location>/common/error.jsp</location>
@@ -143,4 +147,5 @@
 		<error-code>500</error-code>
 		<location>/common/error.jsp</location>
 	</error-page>
+	 -->
 </web-app>

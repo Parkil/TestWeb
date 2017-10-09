@@ -1,4 +1,4 @@
-package gen_template.util;
+package gen_template.search;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import gen_template.ElementData;
+import gen_template.search.login.ExecLoginProc;
 import gen_template.tree.Node;
 import gen_template.tree.Tree;
 
@@ -42,15 +42,23 @@ public class AutoSearch {
 	 * @param search_tag 클릭하고자하는 요소를 지정한 By클래스
 	 * @param tree 정보를 저장할 Tree구조 클래스
 	 * @param driver selenium WebDriver 클래스
+	 * @param proc TODO
 	 * @return @param tree와 동일한 Tree구조
 	 */
-	public static Tree searchClickableElement(By search_tag, Tree tree, WebDriver driver){
+	public static Tree searchClickableElement(By search_tag, Tree tree, WebDriver driver, ExecLoginProc proc){
 		WebDriverWait wdw = new WebDriverWait(driver,10); 
 		
 		WebElement el = null;
 		List<Node> node_list = null;
 		int level = 0;
 		
+		tree = new Tree();
+		
+		try{
+			proc.exec_login(driver, tree);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
 		
 		while( (node_list = tree.getNodeListByLevel(level)).size() != 0 ) {
 			
@@ -104,9 +112,17 @@ public class AutoSearch {
 					for(int i = 0,length = a_list.size() ; i < length ; i++) {
 						el = a_list.get(i);
 						
-						//일부버튼을 실행하지 않도록 처리(나중에는 설정으로 따로 빼도록 처리)
-						if(el.getText().intern() == "로그아웃".intern() || el.getText().intern() == "history.back()".intern()) {
-							continue;
+						try {
+							//일부버튼을 실행하지 않도록 처리(나중에는 설정으로 따로 빼도록 처리)
+							if(proc.is_logout_btn(driver, el)) {
+								continue;
+							}
+							/* 기존 하드코딩된 로직
+							if(el.getText().intern() == "로그아웃".intern() || el.getText().intern() == "history.back()".intern()) {
+								continue;
+							}*/
+						}catch(Exception e) {
+							e.printStackTrace();
 						}
 						
 						ElementData temp_el_data = new ElementData();
@@ -170,14 +186,14 @@ public class AutoSearch {
 			level++;
 		}
 		
-		/* 검색된 Tree구조 데이터를 이용하여 pageobject소스생성*/
+		/* 검색된 Tree구조 데이터를 이용하여 pageobject소스생성
 		try {
 			new AutoSearchUtil().generateCodeByTree("root-node", tree);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		*/
 		//템플릿 소스코드 생성을 위해서 직렬화-파일저장을 시키는 로직
 		//SerializationTest serial = new SerializationTest();
 		//serial.save(tree);

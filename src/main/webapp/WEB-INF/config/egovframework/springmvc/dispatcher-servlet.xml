@@ -72,6 +72,11 @@
 		org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter
 	-->
 	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		
+		<!--
+			전역 custom data binder 설정
+			ConfiguableWebBindingInitializer를 재사용할수도 있다고 하는데 그 방법은 아직 알지 못함
+		-->
 		<property name="webBindingInitializer">
 			<bean class="egovframework.example.cmmn.web.EgovBindingInitializer" />
 		</property>

@@ -4,6 +4,14 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("#test3").click(function() {
+			alert('test3');
+		});
+	});
+</script>
 <meta http-equiv="Content-Type" content="text/html; charset=EUC-KR">
 <title>Insert title here</title>
 </head>
@@ -13,7 +21,17 @@
 	<table>
 		<tr><td>User:</td><td><input type='text' name='id' id='id' value=''></td></tr>
 		<tr><td>Password:</td><td><input type='password' name='pw' id='pw'/></td></tr>
-		<tr><td colspan='2'><input name="submit" type="submit" value="login"/></td></tr>
+		<tr>
+			<td colspan='2'>
+				<input name="submit" Type="submit" value="login"/>
+				<%--
+				<input tYpe="button" name="test1" value="input-button" onclick="javascript:alert('sdafdsafasd')"/>
+				<input tyPe="image" name="test2" value="input-image"/>
+				<a href="#" id="test3">Jquery event</a>
+				 --%>
+				<%-- <a href="#" onClick="javascript:alert('test12345')">Jquery event</a>--%>
+			</td>
+		</tr>
 		<c:if test="${not empty param.fail}">
 			<tr>
 				<td>

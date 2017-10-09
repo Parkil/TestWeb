@@ -28,8 +28,9 @@ public class TestIE_case4 {
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		driver = Util.getIEDriver();
-		driver.get("http://localhost:10010");
+		//driver = Util.getIEDriver();
+		driver = Util.getChromeDriver();
+		driver.get("http://localhost:8080");
 	}
 
 	@AfterClass
@@ -72,7 +73,7 @@ public class TestIE_case4 {
 		load.Login("user", "user");
 	}
 	
-	@Test
+	//@Test
 	public void test4() {
 		WebDriverWait wdw = new WebDriverWait(driver, 10);
 		wdw.until(ExpectedConditions.titleContains("Basic Board List"));

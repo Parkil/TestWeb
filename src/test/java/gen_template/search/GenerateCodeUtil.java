@@ -1,4 +1,4 @@
-package gen_template.util;
+package gen_template.search;
 
 import java.io.File;
 import java.util.Map;

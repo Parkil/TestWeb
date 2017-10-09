@@ -1,4 +1,4 @@
-package gen_template.util;
+package gen_template.search;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,7 +17,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import gen_template.ElementData;
 import gen_template.tree.Node;
 import gen_template.tree.Tree;
 

@@ -1,5 +1,5 @@
 
-package gen_template;
+package gen_template.testcase;
 
 import org.junit.Assert;
 import org.openqa.selenium.By;

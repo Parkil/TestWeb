@@ -1,7 +1,10 @@
-package gen_template;
+package gen_template.search;
 
 import java.io.Serializable;
 
+/*
+ * 자동검색시 검색되는 클릭가능한 요소를 저장하는 객체
+ */
 public class ElementData implements Serializable{
 	
 	private static final long serialVersionUID = -1263810364771199995L;
