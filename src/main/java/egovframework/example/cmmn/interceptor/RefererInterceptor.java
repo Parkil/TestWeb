@@ -32,6 +32,7 @@ public class RefererInterceptor implements HandlerInterceptor {
 	public boolean preHandle(HttpServletRequest req, HttpServletResponse resp,
 			Object arg2) throws Exception {
 		
+		/*
 		Map<String,String[]> map = (Map<String,String[]>)req.getParameterMap();
 		map.put("selectedId", map.get("id"));
 
@@ -43,6 +44,8 @@ public class RefererInterceptor implements HandlerInterceptor {
 		mav.setViewName("redirect:"+referer);
 		mav.addAllObjects(map);
 		throw new ModelAndViewDefiningException(mav);
+		*/
+		return true;
 	}
 
 }
