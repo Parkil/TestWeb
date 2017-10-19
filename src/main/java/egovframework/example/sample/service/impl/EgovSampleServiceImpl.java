@@ -19,10 +19,12 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import egovframework.rte.fdl.cmmn.AbstractServiceImpl;
 import egovframework.rte.fdl.idgnr.EgovIdGnrService;
+import egovframework.example.sample.mapper.SampleMapper;
 import egovframework.example.sample.service.EgovSampleService;
 import egovframework.example.sample.service.SampleDefaultVO;
 import egovframework.example.sample.service.SampleVO;
@@ -44,9 +46,12 @@ public class EgovSampleServiceImpl extends AbstractServiceImpl implements
 		EgovSampleService {
 
 	/** SampleDAO */
-	@Resource(name = "sampleDAO")
-	private SampleDAO sampleDAO;
-
+//	@Resource(name = "sampleDAO")
+//	private SampleDAO sampleDAO;
+	
+	@Autowired
+	private SampleMapper sampleDAO;
+	
 	/** ID Generation */
 	@Resource(name = "egovIdGnrService")
 	private EgovIdGnrService egovIdGnrService;
@@ -118,7 +123,7 @@ public class EgovSampleServiceImpl extends AbstractServiceImpl implements
 	 * @return 글 목록
 	 * @exception Exception
 	 */
-	public List selectSampleList(SampleDefaultVO searchVO) throws Exception {
+	public List<?> selectSampleList(SampleDefaultVO searchVO) throws Exception {
 		return sampleDAO.selectSampleList(searchVO);
 	}
 
