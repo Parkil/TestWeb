@@ -1,4 +1,4 @@
-package gen_template.search;
+package gen_template.search.login;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -6,7 +6,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import gen_template.search.login.ExecLoginProc;
+import gen_template.search.ElementData;
 import gen_template.tree.Tree;
 
 public class TestLoginProc implements ExecLoginProc {

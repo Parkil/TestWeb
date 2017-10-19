@@ -20,9 +20,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import gen_template.search.AutoSearch;
-import gen_template.search.ElementData;
-import gen_template.search.TestLoginProc;
-import gen_template.tree.Tree;
+import gen_template.search.login.TestLoginProc;
 import util.Util;
 
 /*
