@@ -16,6 +16,7 @@
 package egovframework.example.sample.service;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import javax.validation.constraints.Size;
 
@@ -76,6 +77,8 @@ public class SampleVO extends SampleDefaultVO {
 	 */
 	@NumberFormat(style = NumberFormat.Style.NUMBER, pattern = "#,###.###")
 	private BigDecimal sss = new BigDecimal("10000000000");
+	
+	private Date date;
 
 	public String getId() {
 		return id;
@@ -131,5 +134,13 @@ public class SampleVO extends SampleDefaultVO {
 
 	public void setSss(BigDecimal sss) {
 		this.sss = sss;
+	}
+
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
 	}
 }

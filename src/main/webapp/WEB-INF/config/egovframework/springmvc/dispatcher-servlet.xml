@@ -123,6 +123,11 @@
 				<bean class="egovframework.example.util.MultipartFileToFileVOConverter"/>
 			</set>
 		</property>
+		<property name="formatters">
+			<set>
+				<bean class="egovframework.example.util.TestFormatter"/>
+			</set>
+		</property>
 	</bean>
 	
 	<!-- /Converter Config -->

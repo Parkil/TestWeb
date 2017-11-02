@@ -56,6 +56,12 @@ public class EgovBindingInitializer extends org.springframework.web.bind.support
 	 */
 	public void initBinder(WebDataBinder binder, WebRequest request) {
 		System.out.println("=====================>전역 custom binder 실행");
+		
+		/*
+		 * property-editor와 converter/formatter에 동일한 DataType을 변환하는 기능이 정의되어 있으면 property-editor가 우선권을 갖는다.
+		 * ex)
+		 * 아래 처럼 property-editor에서 Date를 변환하는 로직을 구현하고 하단 formatter에서 Date를 변환하는 기능을 정의했을때 하단 Formatter에서의 기능은 작동하지 않는다.
+		 */
 		//property-editor를 이용하여 binding되는 파라메터를 조작
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		dateFormat.setLenient(false);
