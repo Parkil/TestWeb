@@ -44,7 +44,7 @@
 			password-parameter="pw"
 			login-page="/login.do"
 			default-target-url="/sample/egovSampleList.do"
-			authentication-failure-url="/login.do?fail=true"
+			authentication-failure-url="/login.do?fail=true&#38;lang=en"
 			authentication-success-handler-ref="customSuccessHandler"
 		/>
 		
