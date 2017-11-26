@@ -245,16 +245,23 @@
 			message-common_en_US -> en_US
 			message-common_ko_KR -> ko_KR
 		 -->
+		 
+		<!-- 
 		<mvc:interceptor>
 			<mvc:mapping path="/**/**.do"/>
 			<bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor" p:paramName="lang"/>
 		</mvc:interceptor>
-	
+		-->
+		
+		<!-- mvc:interceptors안에 bean만 설정하면 내부적으로 addWebRequestInterceptor에 interceptor가 등록되며 이경우에는 모든 web요청에 해당 Interceptor가 실행된다. -->
+		<bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor" p:paramName="lang"/>
+		
 		<mvc:interceptor>
 			<mvc:mapping path="/sample/addSample.do"/>
 			<mvc:mapping path="/sample/updateSample.do"/>
 			<bean id="RefererInterceptor" class="egovframework.example.cmmn.interceptor.RefererInterceptor"/>
 		</mvc:interceptor>
+		
 	</mvc:interceptors>
 	<!-- /Interceptor -->
 </beans>
