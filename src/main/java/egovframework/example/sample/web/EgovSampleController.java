@@ -49,6 +49,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import egovframework.rte.fdl.property.EgovPropertyService;
 import egovframework.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
+import egovframework.example.mvccustom.SessionAttribute;
 import egovframework.example.sample.service.EgovSampleService;
 import egovframework.example.sample.service.SampleDefaultVO;
 import egovframework.example.sample.service.SampleVO;
@@ -102,11 +103,11 @@ public class EgovSampleController {
 	public String selectSampleList(
 			@ModelAttribute("searchVO") SampleDefaultVO searchVO,
 			ModelMap model,
-			@RequestHeader Map<String,Object> header_map)
+			@RequestHeader Map<String,Object> header_map,
+			@SessionAttribute(value="sessionVO") Object obj) //사용자정의 argumentResolver,returnValueHandler
 			throws Exception {
 		
-		System.out.println("========================>");
-		System.out.println(header_map);
+		System.out.println("==================================>"+obj);
 		
 		model.addAttribute("sessionVO",searchVO);
 		
@@ -219,7 +220,7 @@ public class EgovSampleController {
 		 * @Valid 어노테이션과 context-validator.xml > validator.xml을 병용하는것도 가능
 		 * 
 		 */
-		beanValidator.validate(sampleVO, bindingResult);
+		//beanValidator.validate(sampleVO, bindingResult); //validator.xml에서 지정한 검증로직을 수행
 
 		if (bindingResult.hasErrors()) {
 			for(ObjectError o : bindingResult.getAllErrors()) {

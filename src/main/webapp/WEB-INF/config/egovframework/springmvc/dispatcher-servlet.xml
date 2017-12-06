@@ -93,7 +93,27 @@
 				</bean>
 			</array>
 		</property>
+		
+		<!--
+			사용자 정의 argumentResover, ReturnValueHandler지정
+			argumentResover - Controller 메소드 인수에 자동으로 들어가는 값을 지정(예를 들어 @RequestParam,등)
+			returnValueHandler - 해당 Method가 반환하는 값 지정
+		-->
+		<property name="customArgumentResolvers">
+			<list>
+				<ref bean="sessionAttribute"/>
+			</list>
+		</property>
+		
+		<property name="customReturnValueHandlers">
+			<list>
+				<ref bean="sessionAttribute"/>
+			</list>
+		</property>
 	</bean>
+	
+	<!-- 사용자 정의 -->
+	<bean id="sessionAttribute" class="egovframework.example.mvccustom.SessionAttributeProcessor" />
 	
 	<!-- @Valid 어노테이션을 사용하려면 보통 <mvc:annotation-driven/>을 선언하나 기존 설정과 충돌하여 사용하지 못할 경우에는 Validator만 따로 선언하여 webBindingInitializer에 지정한다.-->
 	<bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
@@ -154,12 +174,17 @@
 	<!-- /message Converter -->
 
 	
-
 	<!-- - This bean resolves specific types of exceptions to corresponding logical - view names for error views. The default 
 		behaviour of DispatcherServlet - is to propagate all exceptions to the servlet container: this will happen - here with all 
 		other types of exceptions.
+	 -->
 	<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
 		<property name="defaultErrorView" value="cmmn/bizError" />
+		<property name="statusCodes">
+			<props>
+				<prop key="cmmn/dataAccessFailure">404</prop>
+			</props>
+		</property>
 		<property name="exceptionMappings">
 			<props>
 				<prop key="org.springframework.dao.DataAccessException">cmmn/dataAccessFailure</prop>
@@ -169,7 +194,7 @@
 			</props>
 		</property>
 	</bean>
-	 -->
+	
 	<!--
 		RequestToViewNameTranslator 지정
 		Handler에서 view이름 또는 view구현체를 반환하지 않을경우 view를 알아서 지정
