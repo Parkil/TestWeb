@@ -90,7 +90,7 @@ public class AutoSearch {
 				String parent_current_url = driver.getCurrentUrl(); //검색대상 url
 				String parent_xpath = ((ElementData)node.getAttach()).getXpath(); //임시 xpath
 				
-				String del_chk_key = parent_current_url+"=="+AutoSearchUtil.getMethodSignature(parent_xpath);
+				String del_chk_key = parent_current_url+","+AutoSearchUtil.getMethodSignature(parent_xpath);
 				
 				List<ElementData> temp_list = null;
 				if((temp_list = cutOffMap.get(del_chk_key))!= null) {
@@ -103,7 +103,7 @@ public class AutoSearch {
 					/*
 					 * findElements로 얻어온 데이터를 바로 클릭하지 않고
 					 * (바로 클릭시 클릭하는 기능이 페이지를 이동 또는 refresh가 될경우 데이터를 새로 findElements로 갱신하지 않으면 staleElementException이 발생한다)
-					 * xpath_list에 존재하지 않는 데이터만 임시 List에 생성하고 임시 List에 들어있는 데이터를 클릭처리한다.
+					 * alreadyClickElementSet(현재 클릭된 요소가 저장된 Set)에 없는 요소만 리스트에 저장(중복클릭 방지)
 					 */
 					List<WebElement> a_list = driver.findElements(search_tag); //해당페이지의 a link를 검색
 					temp_list = new ArrayList<ElementData>();
@@ -113,14 +113,10 @@ public class AutoSearch {
 						el = a_list.get(i);
 						
 						try {
-							//일부버튼을 실행하지 않도록 처리(나중에는 설정으로 따로 빼도록 처리)
+							//로그아웃 버튼을 실행하지 않도록 처리(나중에는 로그아웃뿐만 아니라 나머지 버튼도 설정으로 실행하지 않도록 처리할 필요가 있음)
 							if(proc.is_logout_btn(driver, el)) {
 								continue;
 							}
-							/* 기존 하드코딩된 로직
-							if(el.getText().intern() == "로그아웃".intern() || el.getText().intern() == "history.back()".intern()) {
-								continue;
-							}*/
 						}catch(Exception e) {
 							e.printStackTrace();
 						}
@@ -128,8 +124,8 @@ public class AutoSearch {
 						ElementData temp_el_data = new ElementData();
 						temp_el_data.setXpath(AutoSearchUtil.getXpathStr(el));
 						
-						//해당 xpath와 url이 동일한 경우 버튼을 클릭하지 않고 continue처리
-						if(alreadyClickElementSet.contains(temp_el_data.getXpath()+"======"+parent_current_url)) {
+						//이미 클릭된 요소일 경우 리스트에 저장하지 않음
+						if(alreadyClickElementSet.contains(temp_el_data.getXpath()+","+parent_current_url)) {
 							continue;
 						}
 						
@@ -142,14 +138,14 @@ public class AutoSearch {
 				
 				
 				for(ElementData e : temp_list) {
-					if(e.getUrl() != null) { //url이 있다는것은 이미 클릭을 한 웹 요소이므로 continue처리함
+					if(e.getUrl() != null) { //url이 있다는것은 이미 클릭을 한 웹 요소이므로 continue처리함(cutOffMap에서 가져온 경우에만 해당됨)
 						continue;
 					}
 					
 					el = driver.findElement(By.xpath(e.getXpath()));
 					
 					el.click();
-					e.setAlertText(AutoSearchUtil.passAlertConfirm(driver));
+					e.setAlertText(AutoSearchUtil.passAlertConfirm(driver)); //alert창 처리
 					
 					wdw.until(ExpectedConditions.elementToBeClickable(By.tagName("body")));
 					
@@ -165,7 +161,7 @@ public class AutoSearch {
 							
 							//전 url로 이동할수 없는 경우 - 해당 데이터가 삭제되거나 수정되어 찾아갈수 없는 경우
 							if(!result) {
-								alreadyClickElementSet.add(e.getXpath()+"======"+parent_current_url);
+								alreadyClickElementSet.add(e.getXpath()+","+parent_current_url);
 								cutOffMap.put(del_chk_key, temp_list);
 								continue node_list_for;
 							}
@@ -175,7 +171,7 @@ public class AutoSearch {
 						}
 					}
 					
-					alreadyClickElementSet.add(e.getXpath()+"======"+parent_current_url);
+					alreadyClickElementSet.add(e.getXpath()+","+parent_current_url);
 				}
 				
 				temp_list = null; //초기화

@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -35,14 +36,12 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
-import org.springframework.web.servlet.ModelAndView;
 import org.springmodules.validation.commons.DefaultBeanValidator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -88,6 +87,8 @@ public class EgovSampleController {
 	/** Validator */
 	@Resource(name = "beanValidator")
 	protected DefaultBeanValidator beanValidator;
+	
+	private Logger logger = Logger.getLogger(EgovSampleController.class); 
 
 	/**
 	 * 글 목록을 조회한다. (pageing)
@@ -107,7 +108,7 @@ public class EgovSampleController {
 			@SessionAttribute(value="sessionVO") Object obj) //사용자정의 argumentResolver,returnValueHandler
 			throws Exception {
 		
-		System.out.println("==================================>"+obj);
+		logger.info("@SessionAttribute value : "+obj);
 		
 		model.addAttribute("sessionVO",searchVO);
 		
@@ -168,9 +169,6 @@ public class EgovSampleController {
 	public String addSampleView(
 			@ModelAttribute("searchVO") SampleDefaultVO searchVO, Model model, HttpSession session, @ModelAttribute("sessionVO") SampleDefaultVO sessionVO)
 			throws Exception {
-		System.out.println("------------------->@SessionAttribute");
-		System.out.println(sessionVO);
-		
 		model.addAttribute("sampleVO", new SampleVO());
 		return "/sample/egovSampleRegister";
 	}
@@ -195,9 +193,6 @@ public class EgovSampleController {
 			SessionStatus status)
 			throws Exception {
 	
-		System.out.println(request.getSession().getAttribute("sampleVO"));
-		System.out.println("=======================================================>");
-		System.out.println(request.toString());
 		//Thread.sleep(1000 * 30);
 		//System.out.println("----"+ToStringBuilder.reflectionToString(sampleVO));
 		//System.out.println(ToStringBuilder.reflectionToString(sampleVO.getFilevo()));
@@ -233,7 +228,6 @@ public class EgovSampleController {
 
 		sampleService.insertSample(sampleVO);
 		status.setComplete();
-		System.out.println("=================================>"+request.toString()+" insert complete");
 		return "forward:/sample/egovSampleList.do";
 	}
 
@@ -393,6 +387,6 @@ public class EgovSampleController {
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {
 		System.out.println("================>Controller 별 binder");
-		binder.setDisallowedFields("id");
+		//binder.setDisallowedFields("id"); //해당 파라메터를 binding하지 않도록 처리
 	}
 }

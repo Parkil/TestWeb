@@ -32,12 +32,7 @@
 <validator:javascript formName="sampleVO" staticJavascript="false" xhtml="true" cdata="false"/>
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 <script type="text/javaScript" language="javascript" defer="defer">
-$(document).ready(function() {
-	$("#list_btn").click(function() {
-		fn_egov_selectList();
-	});
-});
-<!---->
+<!--
 /* 글 목록 화면 function */
 function fn_egov_selectList() {
    	document.detailForm.action = "<c:url value='/sample/egovSampleList.do'/>";
@@ -75,10 +70,6 @@ function fn_egov_save() {
    
 }
 
-function test(a,b,c) {
-	console.log(a,b,c);
-}
-
 function applyBefore(formData, jqForm, options)
 {        
    
@@ -101,15 +92,13 @@ function applyAfter(objResponse, statusText, xhr, $form)
         // ajax 통신 실패 처리영역
     }    
 }
- 
-
+-->
 </script>
 </head>
 
 <body style="text-align:center; margin:0 auto; display:inline; padding-top:100px;">
-
 <form:form commandName="sampleVO" name="detailForm" id="detailForm" method="post" enctype="multipart/form-data">
-<input type="hidden" name="test" value="${param.selectedId}"/>
+
 <div id="content_pop">
 	<!-- 타이틀 -->
 	<div id="title">
@@ -174,23 +163,11 @@ function applyAfter(objResponse, statusText, xhr, $form)
 	</table>
   </div>
 	<div id="sysbtn">
-		<%-- 
 		<ul>
 			<li><span class="btn_blue_l"><a href="javascript:fn_egov_selectList();">List</a><img src="<c:url value='/images/egovframework/example/btn_bg_r.gif'/>" style="margin-left:6px;"></span></li>
 			<li><span class="btn_blue_l"><a href="javascript:fn_egov_save();"><c:out value='${registerFlag}'/></a><img src="<c:url value='/images/egovframework/example/btn_bg_r.gif'/>" style="margin-left:6px;"></span></li>
 			<c:if test="${registerFlag == '수정'}">
 			<li><span class="btn_blue_l"><a href="javascript:fn_egov_delete();">삭제</a><img src="<c:url value='/images/egovframework/example/btn_bg_r.gif'/>" style="margin-left:6px;"></span></li>
-			</c:if>
-			<li><span class="btn_blue_l"><a href="javascript:document.detailForm.reset();">Reset</a><img src="<c:url value='/images/egovframework/example/btn_bg_r.gif'/>" style="margin-left:6px;"></span></li>
-		</ul>
-		--%>
-		<ul>
-			<li><span class="btn_blue_l"><a href="#" id="list_btn">List</a><img src="<c:url value='/images/egovframework/example/btn_bg_r.gif'/>" style="margin-left:6px;"></span></li>
-			<li><span class="btn_blue_l"><a href="#" onclick="javascript:fn_egov_save();"><c:out value='${registerFlag}'/></a><img src="<c:url value='/images/egovframework/example/btn_bg_r.gif'/>" style="margin-left:6px;"></span></li>
-			<c:if test="${registerFlag == '수정'}">
-			<li>
-				<input type="button" name="del_btn" value="삭제" onclick="javascript:fn_egov_delete();"/>
-			</li>
 			</c:if>
 			<li><span class="btn_blue_l"><a href="javascript:document.detailForm.reset();">Reset</a><img src="<c:url value='/images/egovframework/example/btn_bg_r.gif'/>" style="margin-left:6px;"></span></li>
 		</ul>
@@ -200,6 +177,7 @@ function applyAfter(objResponse, statusText, xhr, $form)
 <input type="hidden" name="searchCondition" value="<c:out value='${searchVO.searchCondition}'/>"/>
 <input type="hidden" name="searchKeyword" value="<c:out value='${searchVO.searchKeyword}'/>"/>
 <input type="hidden" name="pageIndex" value="<c:out value='${searchVO.pageIndex}'/>"/>
+
 </form:form>
 </body>
 </html>

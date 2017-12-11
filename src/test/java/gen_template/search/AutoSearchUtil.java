@@ -70,7 +70,7 @@ public class AutoSearchUtil {
 				alert.accept();
 				driver.switchTo().window(parent); //alert을 닫은후 포커스를 다시 부모창으로 이동해야 다음 alert을 처리할수 있음.
 			}
-		}catch(NoAlertPresentException nape) {
+		}catch(NoAlertPresentException nape) { //alert이 존재하지 않을 경우
 			//System.out.println("No Alert Presented");
 		}finally {
 			driver.switchTo().window(parent);
@@ -164,6 +164,7 @@ public class AutoSearchUtil {
 		for(ElementData ed: temp_list) {
 			if(ed.getUrl() == null) {
 				isAllClicked = false;
+				break;
 			}
 		}
 		

@@ -13,7 +13,7 @@ public class TestLoginProc implements ExecLoginProc {
 
 	@Override
 	public void exec_login(WebDriver driver, Object... params) throws Exception {
-		driver.get("http://localhost:8080");
+		driver.get("http://localhost:8081");
 		WebElement id = driver.findElement(By.cssSelector("#id"));
 		WebElement pw = driver.findElement(By.cssSelector("#pw"));
 		WebElement submit = driver.findElement(By.cssSelector("input[type='submit']"));
