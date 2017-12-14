@@ -37,6 +37,8 @@ public class AutoSearch {
 	//Multi-thread safe한 Collection사용
 	private static Set<String> alreadyClickElementSet = new ConcurrentSkipListSet<String>(); //클릭하여 Tree를 구성한 xpath를 저장(한번 클릭한 요소를 다시 클릭하는 케이스를 방지)
 	private static Map<String,List<ElementData>> cutOffMap = new ConcurrentHashMap<String,List<ElementData>>(); //클릭후 전 url로 돌아가지 못하는 웹 요소를 저장 (클릭한 요소가 삭제 or 수정)
+	private static Map<String,Integer> signatureCntMap = new ConcurrentHashMap<String,Integer>(); //검색시 method signature별 확인개수를 저장
+	private static String tree_identifier_format_str = "[%1$s]-lv%2$s-%3$s";
 	
 	/** 인자로 주어진 요소를 클릭하고 정보를 Tree에 저장
 	 * @param search_tag 클릭하고자하는 요소를 지정한 By클래스
@@ -88,7 +90,7 @@ public class AutoSearch {
 				 * cutOffMap에 있는 내용을 진행한다.(신규로 진행을 하면 alreadyClickElementSet에 진행하지 못한 요소가 신규 Node 밑에 붙기 때문에 이를 방지)
 				 */
 				String parent_current_url = driver.getCurrentUrl(); //검색대상 url
-				String parent_xpath = ((ElementData)node.getAttach()).getXpath(); //임시 xpath
+				String parent_xpath = ((ElementData)node.getAttach()).getXpath(); //부모의 xpath
 				
 				String del_chk_key = parent_current_url+","+AutoSearchUtil.getMethodSignature(parent_xpath);
 				
@@ -110,6 +112,7 @@ public class AutoSearch {
 					int idx = 0;
 					
 					for(int i = 0,length = a_list.size() ; i < length ; i++) {
+						
 						el = a_list.get(i);
 						
 						try {
@@ -129,8 +132,28 @@ public class AutoSearch {
 							continue;
 						}
 						
+						/*
+						 * 이부분에서 list판단을 해야 할것으로 보임
+						 * list로 판단을하려면 동일한 method signature가 2개이상인걸 판단해야 함
+						 * HashMap containsKey로 체크
+						 * - 각 method signature별 count는 나오는데 이걸 어떻게 tree구조와 match를 시키느냐가 관건
+						 * 		->count자체는 tree구조가 완료된후에 나오기 때문에 tree구조 작성중에 match를 시키는건 의미가 없음 
+						 * 		->소스코드를 생성하는 과정에서 해당값이 들어가야 할것으로 보임
+						 * 		->해당 method signature체크는 동일 level에 있는것만 체크(다른 level은 다른페이지 이므로 의미가 없음)
+						 * 		->cnt를 저장하면서 level이 연관되어 저장되어야 함(어떻게 저장할지는 확인 필요)
+						 */
+						String method_signature = AutoSearchUtil.getMethodSignature(temp_el_data.getXpath());
+						if(!signatureCntMap.containsKey(method_signature)) {
+							signatureCntMap.put(method_signature, 1);
+						}else {
+							int prev_cnt = signatureCntMap.get(method_signature);
+							signatureCntMap.put(method_signature, prev_cnt+1);
+						}
+						
 						String parent_identifier = node.getIdentifier();
-						tree.addNode(parent_identifier+"-"+level+"-"+(++idx), parent_identifier).setAttach(temp_el_data);
+						String identifier = String.format(tree_identifier_format_str, parent_identifier, level, (++idx));
+						
+						tree.addNode(identifier, parent_identifier).setAttach(temp_el_data);
 						
 						temp_list.add(temp_el_data);
 					}
@@ -178,9 +201,10 @@ public class AutoSearch {
 			}
 			
 			tree.display("root-node");
-	
+			
 			level++;
 		}
+		
 		
 		/* 검색된 Tree구조 데이터를 이용하여 pageobject소스생성
 		try {
@@ -193,6 +217,7 @@ public class AutoSearch {
 		//템플릿 소스코드 생성을 위해서 직렬화-파일저장을 시키는 로직
 		//SerializationTest serial = new SerializationTest();
 		//serial.save(tree);
+		System.out.println("signatureCntMap : "+signatureCntMap);
 		
 		return tree;
 	}
