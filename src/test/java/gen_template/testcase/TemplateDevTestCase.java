@@ -103,7 +103,7 @@ public class TemplateDevTestCase {
 	 * 
 	 * 
 	 */
-	//@Test
+	@Test
 	public void test() {
 		
 		driver.get("http://localhost:8080");
@@ -120,6 +120,10 @@ public class TemplateDevTestCase {
 		WebDriverWait wdw = new WebDriverWait(driver,10);
 		wdw.until(ExpectedConditions.titleContains("List"));
 		
+		root_node test = new root_node(driver);
+		test.get();
+		test.load();
+		
 		/*
 		List<WebElement> list = driver.findElements(By.cssSelector("a,input[name='submit'],input[type='button'],input[type='image']"));
 		for(WebElement el : list) {
@@ -133,7 +137,7 @@ public class TemplateDevTestCase {
 		*/
 	}
 
-	@Test
+	//@Test
 	public void test1() throws Exception{
 		By css_selector = By.cssSelector("a,input[name='submit'],input[type='button'],input[type='image']");
 		

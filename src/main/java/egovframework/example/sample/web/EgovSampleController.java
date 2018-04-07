@@ -38,6 +38,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
@@ -381,10 +382,20 @@ public class EgovSampleController {
 		return a;
 	}
 	
+	@RequestMapping(value = "/order.*", method = RequestMethod.GET)
+	public ModelAndView indexWithRequestParameter() {
+		return handleOrderInternal();
+	}
+
+	private ModelAndView handleOrderInternal() {
+		ModelAndView mav = new ModelAndView("order");
+		mav.addObject("testobj", "testobj");
+		return mav;
+	}
+	
 	/*
 	 * method에 ModelAttribute를 설정시 해당 Controller에서 반환하는 View에서는 해당데이터를 가져다 쓸 수 있다.
 	 */
-
 	@ModelAttribute("testddd")
 	public String sss() {
 		return "sssssss123456";

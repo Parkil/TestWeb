@@ -16,6 +16,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 
+import util.Util;
+
 /*
  * 데이터 주도 테스트 관련 소스
  * 
@@ -54,9 +56,11 @@ public class TestIE_case3 {
 		sb.append("IEDriverServer.exe");
 		
 		System.setProperty("webdriver.ie.driver", sb.toString());
-		driver = new InternetExplorerDriver();
+		//driver = new InternetExplorerDriver();
+		//driver = Util.getIEDriver();
+		driver = Util.getChromeDriver();
 		//je = (JavascriptExecutor)driver;
-		driver.get("http://localhost:10010");
+		driver.get("http://localhost:8080");
 	}
 	
 	@AfterClass
@@ -77,7 +81,9 @@ public class TestIE_case3 {
 		//return col.getPlainData();
 		Collection co = null;
 		try {
+			System.out.println("Data Collection 추출");
 			co = col.getCSVData("d:/csv.txt");
+			System.out.println("co : "+co);
 			//co = col.getExcelData("d:/excel.xlsx");
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -86,6 +92,7 @@ public class TestIE_case3 {
 	}
 	
 	public TestIE_case3(String id, String pw) {
+		System.out.println("Data Collection 데이터 입력"+id+"===="+pw);
 		this.id = id;
 		this.pw = pw;
 	}

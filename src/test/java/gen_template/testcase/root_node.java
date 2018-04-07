@@ -40,11 +40,13 @@ public class root_node
     protected void isLoaded()
         throws Error
     {
-        driver.get(url);
+        System.out.println("isLoaded");
+    	driver.get(url);
     }
 
     @Override
     protected void load() {
+    	System.out.println("load");
         Assert.assertEquals("Insert Title Here", driver.getTitle());
     }
 

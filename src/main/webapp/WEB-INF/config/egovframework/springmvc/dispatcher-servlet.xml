@@ -218,12 +218,42 @@
 	<bean id="viewNameTranslator" class="org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator"/>
 	
 	<!--
-		view resolver
+		UrlBasedViewResolver
 		Controller에서 return하는 view가 문자열일 경우 view resolver에서 문자열에 해당하는 view를 검색하고 view를 반환하게 된다.
 		view resolver에서 view를 찾지 못했을 경우에는 ServletException이 발생함
 	 -->
-	<bean class="org.springframework.web.servlet.view.UrlBasedViewResolver" p:order="1"
+	<bean class="org.springframework.web.servlet.view.UrlBasedViewResolver" p:order="2"
 		p:viewClass="org.springframework.web.servlet.view.JstlView" p:prefix="/WEB-INF/jsp/egovframework/example/" p:suffix=".jsp" />
+	
+	
+	<!-- xml에서 map을 생성하고 map의 값을 입력하는 방법 -->
+	<util:map id="pdfViewMap" key-type="java.lang.String" value-type="org.springframework.web.servlet.view.document.AbstractPdfView" map-class="java.util.HashMap">
+		<entry key="order">
+			<bean class="egovframework.example.cmmn.viewresolver.PdfView"/>
+		</entry>
+	</util:map>
+	
+	<!-- xml에서 map을 생성하고 map의 값을 입력하는 방법 -->
+	<util:map id="excelViewMap" key-type="java.lang.String" value-type="org.springframework.web.servlet.view.document.AbstractPdfView" map-class="java.util.HashMap">
+		<entry key="order">
+			<bean class="egovframework.example.cmmn.viewresolver.ExcelView"/>
+		</entry>
+	</util:map>
+	
+	<!-- ContentNegotiatingViewResolver+Custom View Resolver를 이용하여 PdfView를 지정하는 방법 해당 View Resolver의 order가 1이어야 정상적으로 작동한다.-->
+	<bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver" p:order="1">
+		<property name="viewResolvers">
+			<list>
+				<bean class="egovframework.example.cmmn.viewresolver.SimpleConfigurableViewResolver">
+					<property name="views" ref="pdfViewMap"/>
+				</bean>
+				
+				<bean class="egovframework.example.cmmn.viewresolver.SimpleConfigurableViewResolver">
+					<property name="views" ref="excelViewMap"/>
+				</bean>
+			</list>
+		</property>
+	</bean>
 
 	<!-- - Message source for this context, loaded from localized "messages_xx" files. - Could also reside in the root application 
 		context, as it is generic, - but is currently just used within Application's web tier. 
@@ -249,9 +279,15 @@
 		<property name="maxInMemorySize" value="100000"/>
 		<property name="defaultEncoding" value="utf-8"/>
 	</bean>
-	
-	
 	<!-- /File Upload -->
+	
+	<!--
+		RequestDataValueProcessor 설정
+		Controller에서 마지막 단계(View 생성 or Redirect/Forward) 실행전 파라메터값을 검사하거나 변경을 할수 있다.
+		
+		이를 사용하려면 Bean id를  requestDataValueProcessor로 지정하고 RequestDataValueProcessor를 구현한 클래스로 Bean을 생성한다.
+	-->
+	<bean id="requestDataValueProcessor" class="egovframework.example.mvccustom.CustomDataValueProcessor"/>
 	
 	<!-- Locale Resolver -->
 	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver" />
@@ -288,5 +324,6 @@
 		</mvc:interceptor>
 		
 	</mvc:interceptors>
+	
 	<!-- /Interceptor -->
 </beans>

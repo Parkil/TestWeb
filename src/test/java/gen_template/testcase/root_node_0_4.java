@@ -1,7 +1,10 @@
 
 package gen_template.testcase;
 
+import java.util.Collection;
+
 import org.junit.Assert;
+import org.junit.runners.Parameterized.Parameters;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -47,7 +50,7 @@ public class root_node_0_4
     protected void load() { //load조건을 자동으로 처리하도록 수정필요
         Assert.assertEquals("Sample 수정", driver.getTitle());
     }
-
+    
     public void exec(Object... params) {
        btn1.click();
         

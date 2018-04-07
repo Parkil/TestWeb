@@ -34,14 +34,15 @@ public class Util {
 		System.out.println(sb.toString());
 		
 		System.setProperty("webdriver.ie.driver", sb.toString());
+		/*
 		DesiredCapabilities dc = new DesiredCapabilities();
 		dc.setCapability("nativeEvents", false);    
 		dc.setCapability("unexpectedAlertBehaviour", "accept");
 		dc.setCapability("ignoreProtectedModeSettings", true);
 		dc.setCapability("disable-popup-blocking", true);
 		dc.setCapability("enablePersistentHover", true);
-
-		return new InternetExplorerDriver(dc);
+		*/
+		return new InternetExplorerDriver();
 	}
 	
 	/**firegox 용 웹 드라이버 클래스 반환
