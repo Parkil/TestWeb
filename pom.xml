@@ -102,6 +102,12 @@
 			<artifactId>spring-orm</artifactId>
 			<version>${spring.maven.artifact.version}</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-oxm</artifactId>
+			<version>${spring.maven.artifact.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -323,17 +329,15 @@
 		
 		<!-- cucumber jvm -->
 		<dependency>
-			<groupId>info.cukes</groupId>
+			<groupId>io.cucumber</groupId>
 			<artifactId>cucumber-java</artifactId>
-			<version>1.2.5</version>
-			<scope>test</scope>
+			<version>4.2.0</version>
 		</dependency>
 		
 		<dependency>
-			<groupId>info.cukes</groupId>
+			<groupId>io.cucumber</groupId>
 			<artifactId>cucumber-junit</artifactId>
-			<version>1.2.5</version>
-			<scope>test</scope>
+			<version>4.2.0</version>
 		</dependency>
 		<!-- /cucumber jvm -->
 		
@@ -507,6 +511,14 @@
 			<version>1.0.1</version>
 		</dependency>
 		<!-- /monte video recoder  -->
+		
+		<!-- itext pdf  -->
+		<dependency>
+			<groupId>com.lowagie</groupId>
+			<artifactId>itext</artifactId>
+			<version>2.1.7</version>
+		</dependency>
+		<!-- /itext pdf  -->
 	</dependencies>
 
 	<build>
