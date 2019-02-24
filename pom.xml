@@ -43,6 +43,15 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
+		
+		<!-- selenium 관련 repository -->
+		<repository>
+			<id>selenium</id>
+			<url>https://mvnrepository.com/artifact/org.seleniumhq.selenium</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
 	</repositories>
 
 	<dependencies>
@@ -428,37 +437,31 @@
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-server</artifactId>
-			<version>2.53.0</version>
+			<version>3.14.0</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-java</artifactId>
-			<version>2.53.0</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.seleniumhq.selenium</groupId>
-			<artifactId>selenium-htmlunit-driver</artifactId>
-			<version>2.52.0</version>
+			<version>3.14.0</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-api</artifactId>
-			<version>2.53.0</version>
+			<version>3.14.0</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-firefox-driver</artifactId>
-			<version>2.53.0</version>
+			<version>3.14.0</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-chrome-driver</artifactId>
-			<version>2.53.0</version>
+			<version>3.14.0</version>
 		</dependency>
 		
 		<dependency>
