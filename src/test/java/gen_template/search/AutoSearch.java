@@ -1,6 +1,7 @@
 package gen_template.search;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -13,6 +14,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import gen_template.search.config.AutoSearchConfig;
 import gen_template.search.login.ExecLoginProc;
 import gen_template.tree.Node;
 import gen_template.tree.Tree;
@@ -45,20 +47,29 @@ public class AutoSearch {
 	 * @param proc TODO
 	 * @return @param tree와 동일한 Tree구조
 	 */
-	public static Tree searchClickableElement(By search_tag, Tree tree, WebDriver driver, ExecLoginProc proc){
+	public static Tree searchClickableElement(WebDriver driver, ExecLoginProc proc){
 		WebDriverWait wdw = new WebDriverWait(driver,10); 
 		
 		WebElement el = null;
 		List<Node> node_list = null;
 		int level = 0;
 		
-		tree = new Tree();
+		Tree tree = new Tree();
 		
 		try{
 			proc.exec_login(driver, tree);
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
+		
+		AutoSearchConfig auto = AutoSearchConfig.getInstance();
+		//auto.setClickableCss("a,input[name='submit'],input[type='button'],input[type='image']");
+		//auto.setClickableCss("a, input[type='button']"); //a만 설정시 오작동발생(2019-02-27)
+		auto.setClickableCss("a");
+		auto.setInputableCss("input[type='text'], input[type='checkbox'], input[type='radio'], textarea, select");
+		
+		By clickableTag = auto.getClickableCss(); //검색하고자하는 클릭가능한 요소
+		By inputableTag = auto.getInputableCss(); //검색하고자하는 입력가능한 요소
 		
 		while( (node_list = tree.getNodeListByLevel(level)).size() != 0 ) {
 			
@@ -71,12 +82,12 @@ public class AutoSearch {
 					continue node_list_for;
 				}
 				
-				List<Node> to_root_list = null;
+				List<Node> toRootList = null;
 				
 				//해당 node에 해당하는 화면으로 이동(level 0이면 url이동 그외는 node에 저장된 xpath를 가져와서 요소를 클릭하는 방식으로 처리)
 				if(level != 0) {
-					to_root_list = tree.getNodeListToRoot(node.getIdentifier());
-					boolean result = AutoSearchUtil.navigateTargetUrl(to_root_list, driver, wdw);
+					toRootList = tree.getNodeListToRoot(node.getIdentifier());
+					boolean result = AutoSearchUtil.navigateTargetUrl(toRootList, driver, wdw);
 					
 					if(!result) {
 						continue node_list_for;
@@ -87,17 +98,24 @@ public class AutoSearch {
 				 * cufOffMap(검색 진행도중 삭제나 기타 이유로 진행을 할수 없는 url을 저장한 Map)을 검색하여 검색결과가 있으면 신규 검색을 하는것이 아니라 
 				 * cutOffMap에 있는 내용을 진행한다.(신규로 진행을 하면 alreadyClickElementSet에 진행하지 못한 요소가 신규 Node 밑에 붙기 때문에 이를 방지)
 				 */
-				String parent_current_url = driver.getCurrentUrl(); //검색대상 url
-				String parent_xpath = ((ElementData)node.getAttach()).getXpath(); //임시 xpath
+				String currentUrl = driver.getCurrentUrl(); //검색대상 url
+				String parentXpath = ((ElementData)node.getAttach()).getXpath(); //부모의 xpath
 				
-				String del_chk_key = parent_current_url+"=="+AutoSearchUtil.getMethodSignature(parent_xpath);
+				String delChkKey = currentUrl+"=="+AutoSearchUtil.getMethodSignature(parentXpath);
+				
+				//해당 페이지의 입력가능한 요소 검색
+				List<WebElement> inputElList = driver.findElements(inputableTag);
+				List<String> inputElXpathList = AutoSearchUtil.getXpathStrList(inputElList);
+				
+				temp.setInput_el_list(inputElXpathList);
+				//--해당 페이지의 입력가능한 요소 검색
 				
 				List<ElementData> temp_list = null;
-				if((temp_list = cutOffMap.get(del_chk_key))!= null) {
+				if((temp_list = cutOffMap.get(delChkKey))!= null) {
 					
 					//리스트에 들어있는 요소를 모두 클릭했으면리스트에서 삭제처리
 					if(AutoSearchUtil.isAllClicked(temp_list)) {
-						cutOffMap.remove(del_chk_key);
+						cutOffMap.remove(delChkKey);
 					}
 				}else {
 					/*
@@ -105,33 +123,38 @@ public class AutoSearch {
 					 * (바로 클릭시 클릭하는 기능이 페이지를 이동 또는 refresh가 될경우 데이터를 새로 findElements로 갱신하지 않으면 staleElementException이 발생한다)
 					 * xpath_list에 존재하지 않는 데이터만 임시 List에 생성하고 임시 List에 들어있는 데이터를 클릭처리한다.
 					 */
-					List<WebElement> a_list = driver.findElements(search_tag); //해당페이지의 a link를 검색
+					List<WebElement> clickableElList = driver.findElements(clickableTag); //해당페이지의 클릭가능한 요소를 검색
+					List<String> clickableElXpathList = AutoSearchUtil.getXpathStrList(clickableElList);
+				
 					temp_list = new ArrayList<ElementData>();
 					int idx = 0;
 					
-					for(int i = 0,length = a_list.size() ; i < length ; i++) {
-						el = a_list.get(i);
+					for(int i = 0,length = clickableElList.size() ; i < length ; i++) {
+						el = clickableElList.get(i);
 						
 						try {
-							//일부버튼을 실행하지 않도록 처리(나중에는 설정으로 따로 빼도록 처리)
+							//일부버튼을 실행하지 않도록 처리(나중에는 로그인 외 설정으로 따로 빼도록 처리)
 							if(proc.is_logout_btn(driver, el)) {
 								continue;
 							}
-							/* 기존 하드코딩된 로직
-							if(el.getText().intern() == "로그아웃".intern() || el.getText().intern() == "history.back()".intern()) {
-								continue;
-							}*/
 						}catch(Exception e) {
 							e.printStackTrace();
 						}
 						
-						ElementData temp_el_data = new ElementData();
-						temp_el_data.setXpath(AutoSearchUtil.getXpathStr(el));
+						String xpath_str = AutoSearchUtil.getXpathStr(el);
 						
 						//해당 xpath와 url이 동일한 경우 버튼을 클릭하지 않고 continue처리
-						if(alreadyClickElementSet.contains(temp_el_data.getXpath()+"======"+parent_current_url)) {
+						
+						/*
+						 * forward로 페이지가 이동하였을 경우 실제 페이지 url과 브라우저에서 표시되는 url이 달라질수 있으므로 
+						 * xpath+현재 url을 기준으로 체크하는데에는 문제가 있어서 input xpath+ click xapth가 동일하면 동일페이
+						 */
+						if(alreadyClickElementSet.contains(xpath_str+"======"+currentUrl)) {
 							continue;
 						}
+						
+						ElementData temp_el_data = new ElementData();
+						temp_el_data.setXpath(xpath_str);
 						
 						String parent_identifier = node.getIdentifier();
 						tree.addNode(parent_identifier+"-"+level+"-"+(++idx), parent_identifier).setAttach(temp_el_data);
@@ -153,47 +176,48 @@ public class AutoSearch {
 					
 					wdw.until(ExpectedConditions.elementToBeClickable(By.tagName("body")));
 					
-					String child_current_url = driver.getCurrentUrl();
-					e.setUrl(child_current_url);
+					String childCurrentUrl = driver.getCurrentUrl();
+					e.setUrl(childCurrentUrl);
 					
 					//부모 - 자식간 url이 동일함(검색 이나 외부 연동 또는 팝업처럼 페이지를 이동하지 않는 로직)
-					if(parent_current_url.indexOf(child_current_url) != -1 || child_current_url.indexOf(parent_current_url) != -1) {
+					if(currentUrl.indexOf(childCurrentUrl) != -1 || childCurrentUrl.indexOf(currentUrl) != -1) {
 						e.setSameUrl(true);
 					}else { //부모 - 자식간 url이 동일하지 않음 - ElementData에 값을 입력하고 전  URL로 이동처리
 						if(level != 0) {
-							boolean result = AutoSearchUtil.navigateTargetUrl(to_root_list, driver, wdw);
+							boolean result = AutoSearchUtil.navigateTargetUrl(toRootList, driver, wdw);
 							
 							//전 url로 이동할수 없는 경우 - 해당 데이터가 삭제되거나 수정되어 찾아갈수 없는 경우
 							if(!result) {
-								alreadyClickElementSet.add(e.getXpath()+"======"+parent_current_url);
-								cutOffMap.put(del_chk_key, temp_list);
+								alreadyClickElementSet.add(e.getXpath()+"======"+currentUrl);
+								cutOffMap.put(delChkKey, temp_list);
 								continue node_list_for;
 							}
 						}else { //부모가  tree level 0인 경우
-							driver.get(parent_current_url);
+							driver.get(currentUrl);
 							wdw.until(ExpectedConditions.elementToBeClickable(By.tagName("body")));
 						}
 					}
 					
-					alreadyClickElementSet.add(e.getXpath()+"======"+parent_current_url);
+					alreadyClickElementSet.add(e.getXpath()+"======"+currentUrl);
 				}
 				
 				temp_list = null; //초기화
 			}
 			
+			System.out.println("level : "+level);
 			tree.display("root-node");
-	
+			System.out.println();
 			level++;
 		}
 		
-		/* 검색된 Tree구조 데이터를 이용하여 pageobject소스생성
+		/* 검색된 Tree구조 데이터를 이용하여 pageobject소스생성*/
 		try {
 			new AutoSearchUtil().generateCodeByTree("root-node", tree);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		*/
+		
 		//템플릿 소스코드 생성을 위해서 직렬화-파일저장을 시키는 로직
 		//SerializationTest serial = new SerializationTest();
 		//serial.save(tree);

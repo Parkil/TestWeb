@@ -1,10 +1,8 @@
 package gen_template.search;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -110,7 +108,47 @@ public class AutoSearchUtil {
 		return true;
 	}
 	
-	/**javascript 메소드의 유형 반환
+	/**JavaScript 함수 시그니처(변수명 + 파라메터 개수) 반환
+	 * @param method_str
+	 * @return
+	 */
+	public static String getJavaScriptMethodSignature(String method_str) {
+		Pattern p = Pattern.compile("\\((.*)\\)");
+		Matcher m = p.matcher(method_str);
+		
+		StringBuffer sb = new StringBuffer();
+		sb.append("(");
+		if(m.find()) {
+			String param_str = m.group(1);
+			
+			if(param_str == null || param_str.intern() == "".intern()) {
+				return method_str;
+			}else {
+				String arr[] = param_str.split(",");
+				
+				String val = null;
+				for(int i = 0 ; i<arr.length ; i++) {
+					val = arr[i];
+					if(val.matches("'(.*)'")) { // '~'
+						sb.append("''");
+					}else if(val.matches("\"(.*)\"")) { //"~"
+						sb.append("\"\"");
+					}
+					
+					if(i != arr.length-1) {
+						sb.append(",");
+					}
+				}
+				sb.append(")");
+			}
+			
+			return method_str.replaceAll(p.toString(), sb.toString());
+		}else {
+			return method_str;
+		}
+	}
+	
+	/**java 메소드 시그니처(변수명+파라메터 개수) 반환
 	 * @param method_str javascript 호출 문자열
 	 * @return
 	 */
@@ -170,46 +208,6 @@ public class AutoSearchUtil {
 		return isAllClicked;
 	}
 	
-	/**JavaScript Method 구조 반환
-	 * @param method_str
-	 * @return
-	 */
-	public static String getJavaScriptMethodSignature(String method_str) {
-		Pattern p = Pattern.compile("\\((.*)\\)");
-		Matcher m = p.matcher(method_str);
-		
-		StringBuffer sb = new StringBuffer();
-		sb.append("(");
-		if(m.find()) {
-			String param_str = m.group(1);
-			
-			if(param_str == null || param_str.intern() == "".intern()) {
-				return method_str;
-			}else {
-				String arr[] = param_str.split(",");
-				
-				String val = null;
-				for(int i = 0 ; i<arr.length ; i++) {
-					val = arr[i];
-					if(val.matches("'(.*)'")) { // '~'
-						sb.append("''");
-					}else if(val.matches("\"(.*)\"")) { //"~"
-						sb.append("\"\"");
-					}
-					
-					if(i != arr.length-1) {
-						sb.append(",");
-					}
-				}
-				sb.append(")");
-			}
-			
-			return method_str.replaceAll(p.toString(), sb.toString());
-		}else {
-			return method_str;
-		}
-	}
-	
 	/** AutoSearch에서 생성된 Tree데이터를 기준으로 템플릿 코드 생성
 	 * @param identifier
 	 * @param tree
@@ -218,15 +216,12 @@ public class AutoSearchUtil {
 	public void generateCodeByTree(String identifier, Tree tree) throws Exception{
 		ArrayList<String> children = tree.getNode(identifier).getChildren();
 		
-		Map<String,String> gen_data_map = new HashMap<String,String>();
 		if(children.size() != 0) {
 			ElementData parent_el = (ElementData)tree.getNode(identifier).getAttach();
-			gen_data_map.put("url", parent_el.getUrl());
-			gen_data_map.put("class_nm", identifier.replace("-", "_")); //나중에 식별자 자체를 _로 변경
 			
 			Set<String> signature_set = new HashSet<String>();
 			
-			int idx = 0;
+			List<String> btn_xpath_list = new ArrayList<String>();
 			for (String child : children) {
 				ElementData child_el = (ElementData)tree.getNode(child).getAttach();
 				
@@ -238,14 +233,29 @@ public class AutoSearchUtil {
 				
 				signature_set.add(signature);
 				
-				gen_data_map.put("xpath"+(++idx), child_el.getXpath());
+				btn_xpath_list.add(child_el.getXpath());
 			}
-			new GenerateCodeUtil().genTemplateCode(gen_data_map);
+			
+			new GenerateCodeUtil().genTemplateCode(identifier.replace("-", "_"), parent_el.getUrl(), btn_xpath_list, parent_el.getInput_el_list());
 		}
 
 		for (String child : children) {
 			//재귀호출
 			this.generateCodeByTree(child, tree);
 		}
+	}
+	
+	/**WebElement 리스트를 기반으로 xpath문자열 리스트를 반환
+	 * @param elList
+	 * @return
+	 */
+	public static List<String> getXpathStrList(List<WebElement> elList) {
+		List<String> retList = new ArrayList<String>();
+		
+		for(WebElement el : elList) {
+			retList.add(getXpathStr(el));
+		}
+		
+		return retList;
 	}
 }

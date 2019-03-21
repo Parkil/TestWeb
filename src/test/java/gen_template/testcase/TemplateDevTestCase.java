@@ -103,7 +103,7 @@ public class TemplateDevTestCase {
 	 * 
 	 * 
 	 */
-	@Test
+	//@Test
 	public void test() {
 		
 		driver.get("http://localhost:8080");
@@ -119,10 +119,10 @@ public class TemplateDevTestCase {
 		
 		WebDriverWait wdw = new WebDriverWait(driver,10);
 		wdw.until(ExpectedConditions.titleContains("List"));
+		WebElement hidden1= driver.findElement(By.cssSelector("input[name=hidden1]"));
+		System.out.println(hidden1);
 		
-		root_node test = new root_node(driver);
-		test.get();
-		test.load();
+		//System.out.println("==>"+je.executeScript("jQuery._data( document.body, \"events\" )") );
 		
 		/*
 		List<WebElement> list = driver.findElements(By.cssSelector("a,input[name='submit'],input[type='button'],input[type='image']"));
@@ -136,19 +136,11 @@ public class TemplateDevTestCase {
 		//System.out.println(test.getTagName()+"=="+test.getAttribute("id")+"=="+test.getAttribute("name")+"=="+test.getAttribute("type"));
 		*/
 	}
-
-	//@Test
+	
+	//최종 테스트 케이스
+	@Test
 	public void test1() throws Exception{
-		By css_selector = By.cssSelector("a,input[name='submit'],input[type='button'],input[type='image']");
-		
-		/*
-		//root-node를 수동으로 입력
-		ElementData el_data = new ElementData();
-		el_data.setUrl(driver.getCurrentUrl());
-		Tree tree = new Tree();
-		tree.addNode("root-node").setAttach(el_data);
-		*/
-		AutoSearch.searchClickableElement(css_selector, null, driver, new TestLoginProc());
+		AutoSearch.searchClickableElement(driver, new TestLoginProc());
 	}
 	
 	//@Test
