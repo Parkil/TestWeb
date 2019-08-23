@@ -23,7 +23,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.os.WindowsUtils;
-import org.openqa.selenium.remote.RemoteWebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
@@ -32,8 +31,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import util.CompareUtil;
 import util.ObjectMap;
 import util.WebElementExpand;
-
-import com.sun.jna.platform.WindowUtils;
 
 /*
  * 테스트케이스 실행시 원래는 순서기 Junit 임의대로 실행된다. 이를 특정순서대로 표시하고 싶으면 

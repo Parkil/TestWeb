@@ -74,6 +74,7 @@ public interface EgovSampleService {
 	 * @return 글 목록
 	 * @exception Exception
 	 */
+    @SuppressWarnings("rawtypes")
     List selectSampleList(SampleDefaultVO searchVO) throws Exception;
     
     /**

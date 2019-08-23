@@ -13,9 +13,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface SessionAttribute {
-	String value() default "";
-	
-	boolean required() default false;
-	
-	boolean exposeAsModelAttribute() default false;
+    String value() default "";
+    
+    boolean required() default false;
+    
+    boolean exposeAsModelAttribute() default false;
 }

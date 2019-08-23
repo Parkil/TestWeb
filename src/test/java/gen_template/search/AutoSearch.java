@@ -107,7 +107,7 @@ public class AutoSearch {
 				List<WebElement> inputElList = driver.findElements(inputableTag);
 				List<String> inputElXpathList = AutoSearchUtil.getXpathStrList(inputElList);
 				
-				temp.setInput_el_list(inputElXpathList);
+				//temp.setInput_el_list(inputElXpathList);
 				//--해당 페이지의 입력가능한 요소 검색
 				
 				List<ElementData> temp_list = null;

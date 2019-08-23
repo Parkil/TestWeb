@@ -11,29 +11,27 @@ import org.springframework.util.StringUtils;
 
 public class TestFormatter implements Formatter<Date> {
 
-	private String format;
-	
-	@Override
-	public String print(Date object, Locale locale) {
-		System.out.println("======================>TestFormatter print");
-		return getDateFormat(locale).format(object);
-	}
+    private String format;
+    
+    @Override
+    public String print(Date object, Locale locale) {
+        return getDateFormat(locale).format(object);
+    }
 
-	@Override
-	public Date parse(String text, Locale locale) throws ParseException {
-		System.out.println("======================>TestFormatter parse");
-		return getDateFormat(locale).parse(text);
-	}
+    @Override
+    public Date parse(String text, Locale locale) throws ParseException {
+        return getDateFormat(locale).parse(text);
+    }
 
-	private DateFormat getDateFormat(Locale locale) {
-		if(StringUtils.hasText(this.format)) {
-			return new SimpleDateFormat(this.format, locale);
-		}else {
-			return SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM, locale);
-		}
-	}
-	
-	public void setFormat(String format) {
-		this.format = format;
-	}
+    private DateFormat getDateFormat(Locale locale) {
+        if(StringUtils.hasText(this.format)) {
+            return new SimpleDateFormat(this.format, locale);
+        }else {
+            return SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM, locale);
+        }
+    }
+    
+    public void setFormat(String format) {
+        this.format = format;
+    }
 }

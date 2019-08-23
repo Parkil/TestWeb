@@ -236,7 +236,7 @@ public class AutoSearchUtil {
 				btn_xpath_list.add(child_el.getXpath());
 			}
 			
-			new GenerateCodeUtil().genTemplateCode(identifier.replace("-", "_"), parent_el.getUrl(), btn_xpath_list, parent_el.getInput_el_list());
+			//new GenerateCodeUtil().genTemplateCode(identifier.replace("-", "_"), parent_el.getUrl(), btn_xpath_list, /*parent_el.getInput_el_list()*/ null);
 		}
 
 		for (String child : children) {

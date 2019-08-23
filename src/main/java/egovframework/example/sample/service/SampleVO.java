@@ -17,6 +17,8 @@ package egovframework.example.sample.service;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import javax.validation.constraints.Size;
 
@@ -39,108 +41,128 @@ import egovframework.example.cmmn.service.FileVO;
  */
 public class SampleVO extends SampleDefaultVO {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/** 아이디 */
-	private String id;
+    /** 아이디 */
+    private String id;
 
-	/** 이름 */
-	@NotEmpty(message = "name은 필수값입니다.")
-	@Size(min=1,max=10,message="{errors.range}") //직접 메시지를 입력할수도 있고 다음과 같이 messageSource에 저장된 건을 가져다 쓸수도 있음.
-	private String name;
+    /** 이름 */
+    @NotEmpty(message = "name은 필수값입니다.")
+    @Size(min=1,max=10,message="{errors.range}") //직접 메시지를 입력할수도 있고 다음과 같이 messageSource에 저장된 건을 가져다 쓸수도 있음.
+    private String name;
 
-	/** 내용 */
-	/*
-	 * @NotEmpty같이 hibernate Valid를 이용하는 경우+외부 메시지를 이용할 경우 WEB-INF/classes/ValidationMessages.properties에 지정된 메시지를 가져온다.
-	 * (Spring messageSource와 호환안됨)
-	 * spring messageSource와 같이 이용하게 하려면 LocalValidatorFactoryBean에서 설정을 하라고 하는데 이는 좀더 확인을 해봐야 함
-	 */
-	@NotEmpty(message = "{errors.required}") 
-	private String description;
+    /** 내용 */
+    /*
+     * @NotEmpty같이 hibernate Valid를 이용하는 경우+외부 메시지를 이용할 경우 WEB-INF/classes/ValidationMessages.properties에 지정된 메시지를 가져온다.
+     * (Spring messageSource와 호환안됨)
+     * spring messageSource와 같이 이용하게 하려면 LocalValidatorFactoryBean에서 설정을 하라고 하는데 이는 좀더 확인을 해봐야 함
+     */
+    @NotEmpty(message = "{errors.required}") 
+    private String description;
 
-	/** 사용여부 */
-	private String useYn;
+    /** 사용여부 */
+    private String useYn;
 
-	/** 등록자 */
-	@NotEmpty(message = "regUser는 필수값입니다.") //@Valid 어노테이션에서 검증할 유효성을 어노테이션으로 지정
-	private String regUser;
-	
-	/*
-	 * converter로 multipart file을 FileVO로 변환해서 받기 위해서는 VO안에 변환할 대상 vo를 
-	 * 지정하고 html input type="file" name="filevo"로 지정하면 Controller호출시 자동으로 
-	 * Converter가 실행되어 형변환된 내용이 VO에 담기게 된다.
-	 */
-	private FileVO filevo;
+    /** 등록자 */
+    @NotEmpty(message = "regUser는 필수값입니다.") //@Valid 어노테이션에서 검증할 유효성을 어노테이션으로 지정
+    private String regUser;
+    
+    /*
+     * converter로 multipart file을 FileVO로 변환해서 받기 위해서는 VO안에 변환할 대상 vo를 
+     * 지정하고 html input type="file" name="filevo"로 지정하면 Controller호출시 자동으로 
+     * Converter가 실행되어 형변환된 내용이 VO에 담기게 된다.
+     */
+    private FileVO filevo;
 
-	/*
-	 * Number Format 지정
-	 */
-	@NumberFormat(style = NumberFormat.Style.NUMBER, pattern = "#,###.###")
-	private BigDecimal sss = new BigDecimal("10000000000");
-	
-	private Date date;
+    /*
+     * Number Format 지정
+     */
+    @NumberFormat(style = NumberFormat.Style.NUMBER, pattern = "#,###.###")
+    private BigDecimal decimal = new BigDecimal("10000000000");
+    
+    private Date date;
+    
+    private Map<String,String> map;
+    
+    private List<String> list;
 
-	public String getId() {
-		return id;
-	}
+    public Map<String, String> getMap() {
+        return map;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setMap(Map<String, String> map) {
+        this.map = map;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public List<String> getList() {
+        return list;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setList(List<String> list) {
+        this.list = list;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public String getUseYn() {
-		return useYn;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setUseYn(String useYn) {
-		this.useYn = useYn;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getRegUser() {
-		return regUser;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setRegUser(String regUser) {
-		this.regUser = regUser;
-	}
-	
-	public FileVO getFilevo() {
-		return filevo;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public void setFilevo(FileVO filevo) {
-		this.filevo = filevo;
-	}
+    public String getUseYn() {
+        return useYn;
+    }
 
-	public BigDecimal getSss() {
-		return sss;
-	}
+    public void setUseYn(String useYn) {
+        this.useYn = useYn;
+    }
 
-	public void setSss(BigDecimal sss) {
-		this.sss = sss;
-	}
+    public String getRegUser() {
+        return regUser;
+    }
 
-	public Date getDate() {
-		return date;
-	}
+    public void setRegUser(String regUser) {
+        this.regUser = regUser;
+    }
+    
+    public FileVO getFilevo() {
+        return filevo;
+    }
 
-	public void setDate(Date date) {
-		this.date = date;
-	}
+    public void setFilevo(FileVO filevo) {
+        this.filevo = filevo;
+    }
+
+    public BigDecimal getDecimal() {
+        return decimal;
+    }
+
+    public void setDecimal(BigDecimal decimal) {
+        this.decimal = decimal;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
 }

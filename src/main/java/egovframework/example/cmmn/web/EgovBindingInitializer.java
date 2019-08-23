@@ -18,14 +18,14 @@ package egovframework.example.cmmn.web;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.validation.Validator;
-import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.support.WebBindingInitializer;
 import org.springframework.web.context.request.WebRequest;
 
 /**
@@ -39,37 +39,38 @@ import org.springframework.web.context.request.WebRequest;
  * @version 1.0
  * @see Copyright (C) by MOPAS All right reserved.
  */
-//public class EgovBindingInitializer implements WebBindingInitializer {
 public class EgovBindingInitializer extends org.springframework.web.bind.support.ConfigurableWebBindingInitializer{
-	
-	@Autowired
-	private ConversionService conversionService; //converter 서비스(dispatcher-servlet.xml 에서 id를 conversionService로 지정한 bean을 Autowired를 이용하여 자동으로 DI처리)
-	
-	@Autowired
-	private Validator validator; //validator 서비스 (dispatcher-servlet.xml 에서 id를 validator로 지정한 bean을 Autowired를 이용하여 자동으로 DI처리)
-	/**
-	 * initBinder
-	 * 
-	 * @param binder
-	 * @param request
-	 * @see 개발프레임웍크 실행환경 개발팀
-	 */
-	public void initBinder(WebDataBinder binder, WebRequest request) {
-		System.out.println("=====================>전역 custom binder 실행");
-		
-		/*
-		 * property-editor와 converter/formatter에 동일한 DataType을 변환하는 기능이 정의되어 있으면 property-editor가 우선권을 갖는다.
-		 * ex)
-		 * 아래 처럼 property-editor에서 Date를 변환하는 로직을 구현하고 하단 formatter에서 Date를 변환하는 기능을 정의했을때 하단 Formatter에서의 기능은 작동하지 않는다.
-		 */
-		//property-editor를 이용하여 binding되는 파라메터를 조작
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		dateFormat.setLenient(false);
-		binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, false));
-		binder.registerCustomEditor(String.class,new StringTrimmerEditor(false));
-		
-		//converter 서비스를 지정
-		binder.setConversionService(conversionService);
-		binder.setValidator(validator);
-	}
+    
+    //converter 서비스
+    @Autowired //변수명과 동일한 이름의 bean을 찾아서 DI처리
+    private ConversionService conversionService; 
+    
+    //validator 서비스
+    @Autowired
+    private Validator validator; 
+    
+    protected Log log = LogFactory.getLog(this.getClass());
+    
+    /**
+     * initBinder
+     * 
+     * @param binder
+     * @param request
+     * @see 개발프레임웍크 실행환경 개발팀
+     */
+    public void initBinder(WebDataBinder binder, WebRequest request) {
+        log.info("전역 Binder 실행");
+        
+        /*
+         * binder와 converter/formatter에 동일한 DataType을 변환하는 기능이 정의되어 있으면 property-editor가 우선권을 갖는다.
+         */
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        dateFormat.setLenient(false);
+        binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, false));
+        binder.registerCustomEditor(String.class,new StringTrimmerEditor(false));
+        
+        //converter 서비스를 지정
+        binder.setConversionService(conversionService);
+        binder.setValidator(validator);
+    }
 }

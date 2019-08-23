@@ -90,6 +90,7 @@ public class SampleDAO extends EgovAbstractDAO {
 	 * @return 글 목록
 	 * @exception Exception
 	 */
+    @SuppressWarnings("rawtypes")
     public List selectSampleList(SampleDefaultVO searchVO) throws Exception {
         return list("sampleDAO.selectSampleList_D", searchVO);
     }
@@ -100,6 +101,7 @@ public class SampleDAO extends EgovAbstractDAO {
 	 * @return 글 총 갯수
 	 * @exception
 	 */
+    @SuppressWarnings("deprecation")
     public int selectSampleListTotCnt(SampleDefaultVO searchVO) {
         return (Integer)getSqlMapClientTemplate().queryForObject("sampleDAO.selectSampleListTotCnt_S", searchVO);
     }

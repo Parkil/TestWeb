@@ -13,10 +13,8 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
  * Spring Security에서 로그인성공후 추가 작업을 지정하는 Bean
  */
 public class CustomSuccessHandler implements AuthenticationSuccessHandler {
-
-	@Override
-	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication auth) throws IOException, ServletException {
-		System.out.println("로그인성공");
-		response.sendRedirect("/sample/egovSampleList.do");
-	}
+    @Override
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication auth) throws IOException, ServletException {
+        response.sendRedirect("/sample/egovSampleList.do");
+    }
 }

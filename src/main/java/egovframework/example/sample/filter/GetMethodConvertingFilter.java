@@ -11,35 +11,39 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
+import org.apache.log4j.Logger;
+
 /*
  * GET,POST외의 method를 가진 Controller에서 jsp view를 반환하게 되면 해당 Controller에서는 처음에 호출된 method를
- * 계속 가지고 가기때문에 405에러가 발생한다. 이를 방지하기 위해서 Filter에서 method를 변경한다.
+ * 계속 가지고 가기때문에 405에러가 발생한다. 이를 방지하기 위해서 method를 변경하는 필터를 추가한다 
  */
 public class GetMethodConvertingFilter implements Filter {
+    
+    private static Logger log = Logger.getLogger(GetMethodConvertingFilter.class);
 
-	@Override
-	public void init(FilterConfig config) throws ServletException {
-		// do nothing
-	}
+    @Override
+    public void init(FilterConfig config) throws ServletException {
+        // do nothing
+    }
 
-	@Override
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-			throws IOException, ServletException {
-		chain.doFilter(wrapRequest((HttpServletRequest) request), response);
-	}
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
+        chain.doFilter(wrapRequest((HttpServletRequest) request), response);
+    }
 
-	@Override
-	public void destroy() {
-		// do nothing
-	}
+    @Override
+    public void destroy() {
+        // do nothing
+    }
 
-	private static HttpServletRequestWrapper wrapRequest(HttpServletRequest request) {
-		System.out.println("=====================>org method : "+request.getMethod());
-		return new HttpServletRequestWrapper(request) {
-			@Override
-			public String getMethod() {
-				return "GET";
-			}
-		};
-	}
+    private static HttpServletRequestWrapper wrapRequest(HttpServletRequest request) {
+        log.info("org method {}", request.getMethod());
+        return new HttpServletRequestWrapper(request) {
+            @Override
+            public String getMethod() {
+                return "GET";
+            }
+        };
+    }
 }
