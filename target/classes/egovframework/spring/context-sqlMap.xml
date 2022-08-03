@@ -9,10 +9,21 @@
 	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd			
 	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 
-	<!-- SqlMap setup for iBATIS Database Layer -->
+	<!-- ibatis 설정 -->
 	<bean id="sqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
 		<property name="configLocation" value="classpath:/egovframework/sqlmap/example/sql-map-config.xml"/>
 		<property name="dataSource" ref="dataSource"/>
 	</bean>
-			
+	
+	<!-- mybatis sqlsession 설정 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="mapperLocations" value="classpath:/egovframework/sqlmap/example/mapper/*Mapper.xml" />
+		<property name="configLocation" value="/WEB-INF/mybatis-config.xml" />
+	</bean>
+	
+	<!-- mybatis mapper auto scanning -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="egovframework.example.sample.mapper" />
+	</bean>
 </beans>	

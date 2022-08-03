@@ -1,5 +1,8 @@
 package egovframework.example.sample.filter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 
 import javax.servlet.Filter;
@@ -11,15 +14,13 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
-import org.apache.log4j.Logger;
-
 /*
  * GET,POST외의 method를 가진 Controller에서 jsp view를 반환하게 되면 해당 Controller에서는 처음에 호출된 method를
  * 계속 가지고 가기때문에 405에러가 발생한다. 이를 방지하기 위해서 method를 변경하는 필터를 추가한다 
  */
 public class GetMethodConvertingFilter implements Filter {
-    
-    private static Logger log = Logger.getLogger(GetMethodConvertingFilter.class);
+
+    private final Logger log = LoggerFactory.getLogger(GetMethodConvertingFilter.class);
 
     @Override
     public void init(FilterConfig config) throws ServletException {
@@ -38,7 +39,6 @@ public class GetMethodConvertingFilter implements Filter {
     }
 
     private static HttpServletRequestWrapper wrapRequest(HttpServletRequest request) {
-        log.info("org method {}", request.getMethod());
         return new HttpServletRequestWrapper(request) {
             @Override
             public String getMethod() {

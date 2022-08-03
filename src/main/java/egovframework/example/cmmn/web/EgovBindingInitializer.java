@@ -1,18 +1,3 @@
-/*
- * Copyright 2008-2009 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package egovframework.example.cmmn.web;
 
 import java.text.SimpleDateFormat;
@@ -20,45 +5,26 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.context.request.WebRequest;
 
-/**
- * @Class Name : EgovBindingInitializer.java
- * @Description : EgovBindingInitializer Class
- * @Modification Information @ * @ 수정일 수정자 수정내용 @ --------- ---------
- *               ------------------------------- @ 2009.03.16 최초생성
- * 
- * @author 개발프레임웍크 실행환경 개발팀
- * @since 2009. 03.16
- * @version 1.0
- * @see Copyright (C) by MOPAS All right reserved.
- */
 public class EgovBindingInitializer extends org.springframework.web.bind.support.ConfigurableWebBindingInitializer{
     
-    //converter 서비스
-    @Autowired //변수명과 동일한 이름의 bean을 찾아서 DI처리
-    private ConversionService conversionService; 
-    
-    //validator 서비스
-    @Autowired
-    private Validator validator; 
-    
+    private final ConversionService conversionService;
+    private final Validator validator;
+
+    public EgovBindingInitializer(ConversionService conversionService, Validator validator) {
+        this.conversionService = conversionService;
+        this.validator = validator;
+    }
+
     protected Log log = LogFactory.getLog(this.getClass());
-    
-    /**
-     * initBinder
-     * 
-     * @param binder
-     * @param request
-     * @see 개발프레임웍크 실행환경 개발팀
-     */
-    public void initBinder(WebDataBinder binder, WebRequest request) {
+
+    @Override
+    public void initBinder(WebDataBinder binder) {
         log.info("전역 Binder 실행");
         
         /*

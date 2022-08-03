@@ -5,7 +5,9 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.springframework.lang.NonNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.support.RequestDataValueProcessor;
 
 /*
@@ -13,13 +15,13 @@ import org.springframework.web.servlet.support.RequestDataValueProcessor;
  */
 public class CustomDataValueProcessor implements RequestDataValueProcessor {
     
-    private Logger log = Logger.getLogger(CustomDataValueProcessor.class);
+    private final Logger log = LoggerFactory.getLogger(CustomDataValueProcessor.class);
     
     /*
      * 화면표시시 form - action을 return 값으로 변경
      */
     @Override
-    public String processAction(HttpServletRequest request, String action) {
+    public String processAction(@NonNull HttpServletRequest request, @NonNull String action, @NonNull String httpMethod) {
         log.info("CustomDataValueProcessor.processAction called");
         return action;
     }
@@ -31,7 +33,7 @@ public class CustomDataValueProcessor implements RequestDataValueProcessor {
      * 1,2조건에 맞는 form의 값을 가져온다
      */
     @Override
-    public String processFormFieldValue(HttpServletRequest request, String name, String value, String type) {
+    public String processFormFieldValue(@NonNull HttpServletRequest request, String name, String value, String type) {
         log.info(String.format("CustomDataValueProcessor.processAction called %1$s,%2$s,%3$s", name, value, type));
         return value;
     }
@@ -42,7 +44,7 @@ public class CustomDataValueProcessor implements RequestDataValueProcessor {
     @Override
     public Map<String, String> getExtraHiddenFields(HttpServletRequest request) {
         log.info("CustomDataValueProcessor.getExtraHiddenFields called");
-        Map<String,String> test = new HashMap<String,String>();
+        Map<String,String> test = new HashMap<>();
         test.put("test1", "첫번째 값");
         test.put("test2", "두번째 값");
         return test;
