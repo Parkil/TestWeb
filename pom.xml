@@ -9,7 +9,7 @@
 	<url>http://maven.apache.org</url>
 
 	<properties>
-		<spring.maven.artifact.version>5.3.20</spring.maven.artifact.version>
+		<spring.maven.artifact.version>6.0.0</spring.maven.artifact.version>
 		<spring.security.maven.artifact.version>5.7.2</spring.security.maven.artifact.version>
 	</properties>
 
